@@ -1,0 +1,42 @@
+* {
+  -webkit-font-smoothing: antialiased;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: 'Poppins', 'Open Sans', 'Helvetica Neue', sans-serif;;
+}
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+	background: rgb(254, 254, 254);
+	background-size: cover;
+}
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.display-none {
+  display: none;
+}
+.empty-space {
+  width: 100%;
+  height: 100px;
+  background: transparent;
+  display: none;
+}
+
+/* span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: nowrap;
+}
+ */

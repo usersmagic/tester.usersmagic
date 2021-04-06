@@ -1,0 +1,116 @@
+extends ../partials/head
+block content
+  .all-wrapper
+    .landing-all-header
+      a.landing-header-logo-wrapper(href=language_key ? `/?lang=${language_key}` : '/')
+        img.landing-header-logo(src="/res/images/logo_black.png" alt="usersmagic")
+        span.landing-header-logo-text usersmagic
+      .landing-header-buttons-wrapper
+        a.landing-header-tester-button(href=language_key ? `/auth/register?lang=${language_key}` : '/auth/register')= __("Become a Tester")
+        a.landing-header-start-button(href="https://www.notion.so/4dc920a0096f400cbd74b976780a7526?v=0e2376c9d31b4ddd87b8f38e1462379a" target="_blank")= __("Try Usersmagic")
+        a.change-language-button(href='/?lang=' + (current_language == 'TR' ? 'en' : 'tr'))
+          span= (current_language == "TR" ? "EN" : "TR")
+    .landing-all-content
+      .landing-all-content-inner-wrapper
+        .landing-start-page-wrapper
+          span.landing-start-page-title= __('Reach your target customers')
+          span.landing-start-page-subtitle= __('Improve your product and marketing strategy with user and data-driven decision making.')
+          a.landing-start-button(href="https://app.usersmagic.com" target="_blank")
+            span= __('Start Now')
+        .landing-second-page-wrapper
+          .second-page-brand-wrapper
+            img.each-brand(src="/res/images/logos/clay.png" alt="usersmagic clay")
+            img.each-brand(src="/res/images/logos/varan.png" alt="usersmagic varan")
+            img.each-brand(src="/res/images/logos/nike.png" alt="usersmagic nike")
+            img.each-brand(src="/res/images/logos/teknosa.png" alt="usersmagic teknosa")
+            img.each-brand(src="/res/images/logos/marketyo.png" alt="usersmagic marketyo")
+          .second-page-content-wrapper
+            .second-page-animation-wrapper
+              img.second-page-animation(src="/res/images/landing_user_animation.png" alt="usersmagic")
+            .second-page-inner-content-wrapper
+              span.second-page-content-subtitle= __('TO REACH YOUR GOALS')
+              span.second-page-content-title= __('You need to listen to and understand your customers')
+              span.second-page-content-text= __('Why are our conversion rates lower than expected for certain products and segments, what do Gen-Z think about our product, what do new grads in New York need? Usersmagic allows you to find the responses to your questions so that you can understand your customers from all segments and improve your product or service.')
+              .second-page-down-button
+                span= __('How?')
+                i.fas.fa-arrow-down
+        .how-to-content-wrapper
+          span.how-to-title= __('How do we do it?')
+          .how-to-inner-content-wrapper
+            .how-to-each-wrapper
+              img.how-to-each-icon(src="/res/images/how_to/one.png" alt="usersmagic")
+              span.how-to-each-title= __('Detailed Segmentation')
+              span.how-to-each-text= __('Filter your target by location, gender, job, education, hobbies, and products they already use. You can choose your exact target segment from our extensive and detailed user-database.')
+            .how-to-each-wrapper.how-to-second-each-wrapper(style="margin: 0px 60px")
+              img.how-to-each-icon(src="/res/images/how_to/two.png" alt="usersmagic")
+              span.how-to-each-title= __('User Experience Analysis')
+              span.how-to-each-text= __('Your target audience downloads your app or enters your website, completes your task, and completes the survey according to their experience. We analyze quantitative data, such as Net Promoter Score, Customer Satisfaction Score, and qualitative data, so that you not only measure but also understand their experience, feelings, and thoughts.')
+            .how-to-each-wrapper
+              img.how-to-each-icon(src="/res/images/how_to/three.png" alt="usersmagic")
+              span.how-to-each-title= __('Data-based Insights')
+              span.how-to-each-text= __('Understand the reasoning behind how your user feels, decides, and acts through our thorough analysis. The insights we provide allow you to improve your product, enter new markets and segments, and reach your goal metrics.')
+        .growth-content-wrapper
+          .growth-title-wrapper
+            span.growth-title= __('Growing every day')
+            span.growth-title= __('Growing every day 2')
+            span.growth-subtitle= __('Usersmagic gets the job done for UX researchers, Product Managers, and Founders across the world.')
+          .growth-content-inner-wrapper
+            .each-growth-wrapper
+              img.each-growth-icon(src="/res/images/how_to/one.png" alt="usersmagic")
+              .each-growth-inner-wrapper
+                span.each-growth-title 107.000+
+                span.each-growth-text Tester
+            .each-growth-wrapper.each-growth-wrapper-right
+              img.each-growth-icon(src="/res/images/how_to/two.png" alt="usersmagic")
+              .each-growth-inner-wrapper
+                span.each-growth-title 4
+                span.each-growth-text= __('Countries')
+            .each-growth-wrapper
+              img.each-growth-icon(src="/res/images/how_to/four.png" alt="usersmagic")
+              .each-growth-inner-wrapper
+                span.each-growth-title 37+
+                span.each-growth-text= __('Clients')
+            .each-growth-wrapper.each-growth-wrapper-right
+              img.each-growth-icon(src="/res/images/how_to/three.png" alt="usersmagic")
+              .each-growth-inner-wrapper
+                span.each-growth-title 92
+                span.each-growth-text= __('Cases')
+        //- .contact-content-wrapper
+        //-   .contact-left-wrapper
+        //-     span.contact-title= __('Bize Ulaşın')
+        //-     span.contact-subtitle= __('Usersmagic’ten nasıl faydalanabileceğinizi öğrenmek, bilgi almak ve bizimle çalışmak için bize ulaşın')
+        //-   .contact-right-wrapper
+        //-     .each-input-line
+        //-       input.each-landing-input#name-input(type="text" placeholder=__("Adınız") autocomplete="none" style="margin-right: 15px")
+        //-       input.each-landing-input#surname-input(type="text" placeholder=__("Soyadınız") autocomplete="none" style="margin-left: 15px")
+        //-     .each-input-line
+        //-       input.each-landing-input#email-input(type="text" placeholder=__("Email") autocomplete="none" style="margin-right: 15px")
+        //-       input.each-landing-input#company-name-input(type="text" placeholder=__("Şirket Adı") autocomplete="none" style="margin-left: 15px")
+        //-     textarea.each-landing-input#details-input(type="text" rows="5" placeholder=__("Detay (Opsiyonel)") autocomplete="none")
+        //-     .contact-send-line
+        //-       .contact-send-button
+        //-         span= __("Gönder")
+        //-       span.contact-error-message#general-error-span= __('Bir hata oluştu, lütfen daha sonra tekrar deneyin.')
+        //-       span.contact-error-message#already-registered-error-span= __('Bu e-posta adresi ile zaten bir kayıt alınmış.')
+        //-       span.contact-error-message#missing-information-error-span= __('Lütfen gerekli tüm bilgileri doldurun.')
+        //-       span.contact-error-message#finished-span= __('Kaydınız alındı, ekibimiz en kısa zamanda size ulaşacak. Teşekkürler.')
+        .footer-wrapper
+          .footer-top-wrapper
+            .each-footer-wrapper
+              span.each-footer-title= __('Become a Tester')
+              a.each-footer-text(href="/auth/register")= __('Register')
+              a.each-footer-text(href="/auth/login")= __('Login')
+            .each-footer-wrapper
+              span.each-footer-title= __('About')
+              a.each-footer-text(href="/agreement/privacy")= __('Privacy Statement')
+              a.each-footer-text(href="/agreement/user")= __('User Agreement')
+            .each-footer-wrapper
+              span.each-footer-title= __('Try Usersmagic')
+              span.each-footer-text email:
+              span.each-footer-text hello@usersmagic.com
+          .footer-bottom-wrapper
+            a.footer-header-logo-wrapper(href="/")
+              img.footer-header-logo(src="/res/images/logo_black.png" alt="usersmagic")
+              span.footer-header-logo-text usersmagic
+            .copyright-wrapper
+              span Copyright 2020 - Loy Yazılım
