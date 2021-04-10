@@ -18,7 +18,7 @@ module.exports = (req, res) => {
       if (err) return res.redirect('/');
 
       sendMail({
-        email_list: [user.email],
+        email: user.email,
         subject: res.__('Welcome to Usersmagic!'),
         title: res.__('Welcome to Usersmagic!'),
         text: res.__('We\'re excited to have you get started. Please confirm your email address before you start earning with Usersmagic!'),
