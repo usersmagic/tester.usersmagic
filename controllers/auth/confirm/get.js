@@ -23,7 +23,7 @@ module.exports = (req, res) => {
         title: res.__('Welcome to Usersmagic!'),
         text: res.__('We\'re excited to have you get started. Please confirm your email address before you start earning with Usersmagic!'),
         button: res.__('CONFIRM EMAIL'),
-        url: `https://usersmagic.com/auth/confirm?code=${code}`
+        url: `https://tester.usersmagic.com/auth/confirm?code=${code}`
       }, 'title_text_button_template', err => {
         if (err) return res.redirect('/');
 
