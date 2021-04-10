@@ -161,7 +161,7 @@
 	"CONFIRM EMAIL": "CONFIRM EMAIL",
 	"Confirm Your Email": "Confirm Your Email",
 	"We sent a confirmation link to the email you provided,":	"We sent a confirmation link to the email you provided,",
-	". Please click the link on the email to confirm your email address.": ". Please click the link on the email to confirm your email address.",
+	". Please click the link on the email to confirm your email address. Make sure to check your spam folder.": ". Please click the link on the email to confirm your email address. Make sure to check your spam folder.",
 	"Resend Confirmation Link": "Resend Confirmation Link",
 	"Already a member?": "Already a member?"
 }
