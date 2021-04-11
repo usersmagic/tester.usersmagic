@@ -13,6 +13,8 @@ module.exports = (req, res, next) => {
     });
   } else {
     req.session.redirect = req.originalUrl;
+    if (req.query.code)
+      req.session.redirect += '?code=' + req.query.code;
     res.status(401).redirect('/auth/login' + ((req.query && req.query.lang) ? '?lang=' + req.query.lang : ''));
   };
 };
