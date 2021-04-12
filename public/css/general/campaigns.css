@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   padding: 40px;
+  overflow: hidden;
 }
 
 .all-content-header-wrapper {
@@ -63,8 +64,6 @@
 }
 
 .all-content-inner-wrapper {
-  flex: 1;
-  overflow-x: hidden;
   overflow-y: scroll;
 }
 
