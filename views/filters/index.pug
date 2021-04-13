@@ -33,7 +33,7 @@ block content
                 if campaign.price && !campaign.is_free
                   span.each-campaign-price #{currency}#{campaign.price}
                 else
-                  span.each-campaign-private-price #{__('Özel Kampanya')}
+                  span.each-campaign-private-price #{__('Optional')}
                 a.general-seablue-border-button.each-campaign-join-button(href=`/filters/join?id=${campaign._id}`)
                   span #{__('Join')}
         else
