@@ -33,7 +33,7 @@ block content
                 if submition.campaign.price && !submition.campaign.is_free
                   span.each-campaign-price #{currency}#{submition.campaign.price}
                 else
-                  span.each-campaign-private-price #{__('Özel Kampanya')}
+                  span.each-campaign-private-price #{__('Optional')}
                 if submition.status == 'approved'
                   span.each-campaign-status-text #{__('Your Answers are Approved!')}
                 else if submition.status == 'unapproved'
