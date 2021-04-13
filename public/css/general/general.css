@@ -32,6 +32,11 @@ body {
   background: transparent;
   display: none;
 }
+.general-text-link {
+  color: rgb(46, 197, 206) !important;
+  font-weight: 500 !important;
+  word-wrap: break-word;
+}
 
 /* span {
   overflow: hidden;

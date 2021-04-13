@@ -489,6 +489,9 @@
     width: 100px !important;
     height: 40px !important;
   }
+  .welcome-campaign-instructions {
+    max-width: 400px;
+  }
 }
 @media only screen and (max-width: 450px) and (min-width: 350px) {
   .finish-page-questions-wrapper {
@@ -507,6 +510,9 @@
     width: 100px !important;
     height: 40px !important;
   }
+  .welcome-campaign-instructions {
+    max-width: 300px;
+  }
 }
 @media only screen and (max-width: 350px) and (min-width: 300px) {
   .finish-page-questions-wrapper {
@@ -524,5 +530,8 @@
   .finish-page-submit-button, .finish-page-back-button {
     width: 100px !important;
     height: 40px !important;
+  }
+  .welcome-campaign-instructions {
+    max-width: 290px;
   }
 }

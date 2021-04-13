@@ -14,7 +14,7 @@ block content
   span.cancel-text.display-none= __('Cancel')
   span.your-answer.display-none= __('Your answer')
   span.required.display-none= __('Required')
-  span.clear-answers.display-none= __('Clear answers')
+  span.clear-answers.display-none= __('Clear answer')
   span.are-you-sure-title.display-none= __('Are you sure you want to continue?')
   span.no-update-after-submit-text.display-none= __('You cannot edit or delete your answers once you submit your test. You must rejoin the campaign if your answers are rejected, so please double-check what you wrote. Thank you :)')
   .all-wrapper
@@ -37,7 +37,12 @@ block content
       .welcome-page-wrapper(style="display: none;")
         span.welcome-campaign-name= campaign.name
         span.welcome-title #{__('Instructions')}
-        span.welcome-campaign-instructions= campaign.information
+        .welcome-campaign-instructions
+          each text in campaign.information.split(' ')
+            if text.match(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig)
+              a.welcome-campaign-instructions.general-text-link(href=text target="_blank")  #{text}
+            else if text.trim().length
+              span.welcome-campaign-instructions  #{text}
         .welcome-campaign-instructions-image
         .welcome-button-wrapper
           .general-seablue-button.start-test-button
@@ -112,6 +117,6 @@ block content
                   .checked-choice-wrapper
                     i.checked-choice-icon.fas.fa-check
                 span= choice
-          span.clear-question-button= __('Clear answers')
+          span.clear-question-button= __('Clear answer')
       .next-button
         i.fas.fa-arrow-right

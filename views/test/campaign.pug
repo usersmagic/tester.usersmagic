@@ -16,7 +16,7 @@ block content
   span.not-required.display-none= __('Not required')
   span.no.display-none= __('NO')
   span.yes.display-none= __('YES')
-  span.clear-answers.display-none= __('Clear answers')
+  span.clear-answers.display-none= __('Clear answer')
   span.are-you-sure-title.display-none= __('Are you sure you want to continue?')
   span.no-update-after-submit-text.display-none= __('You cannot edit or delete your answers once you submit your test. Thank you :)')
   .all-wrapper
@@ -40,7 +40,12 @@ block content
         span.welcome-campaign-name= campaign.name
         span.welcome-title #{__('Instructions')}
         span.welcome-campaign-instructions-opening= campaign.welcome_screen.opening
-        span.welcome-campaign-instructions= campaign.welcome_screen.details
+        .welcome-campaign-instructions
+          each text in campaign.welcome_screen.details.split(' ')
+            if text.match(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig)
+              a.welcome-campaign-instructions.general-text-link(href=text target="_blank")  #{text}
+            else if text.trim().length
+              span.welcome-campaign-instructions  #{text}
         if campaign.welcome_screen.image && campaign.welcome_screen.image.length
           .welcome-campaign-instructions-image
             img(src=campaign.welcome_screen.image alt="usersmagic " + campaign.name)
@@ -129,6 +134,6 @@ block content
                     .checked-choice-wrapper
                       i.checked-choice-icon.fas.fa-check
                   span= choice
-          span.clear-question-button= __('Clear answers')
+          span.clear-question-button= __('Clear answer')
       .next-button(style=((submition.last_question > -1 && submition.last_question < questions.length && questions[submition.last_question].question.required) ? "" : "cursor: pointer"))
         i.fas.fa-arrow-right
