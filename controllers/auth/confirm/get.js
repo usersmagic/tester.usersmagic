@@ -7,7 +7,7 @@ const sendMail = require('../../../utils/sendMail');
 module.exports = (req, res) => {
   User.confirmUser(req.query.code, err => {
     if (!err) // The user is succesfully confirmed
-      return res.redirect('/campaigns');
+      return res.redirect('/filters');
 
     const user = req.session.user;
 
@@ -25,7 +25,7 @@ module.exports = (req, res) => {
         button: res.__('CONFIRM EMAIL'),
         url: `https://tester.usersmagic.com/auth/confirm?code=${code}`
       }, 'title_text_button_template', err => {
-        if (err) return res.redirect('/');
+        if (err) return res.redirect('/auth/email_error');
 
         return res.render('auth/confirm', {
           page: 'auth/confirm',

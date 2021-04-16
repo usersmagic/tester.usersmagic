@@ -99,7 +99,7 @@ if (cluster.isMaster) {
   app.use('/waiting', waitingRouteController);
   app.use('/wallet', walletRouteController);
   
-  server.listen(PORT, () => {    
+  server.listen(PORT, () => {
     console.log(`Server is on port ${PORT} as Worker ${cluster.worker.id} running @ process ${cluster.worker.process.pid}`);
   });
 }

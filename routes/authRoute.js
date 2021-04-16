@@ -8,8 +8,9 @@ const loginGetController = require('../controllers/auth/login/get');
 const registerGetController = require('../controllers/auth/register/get');
 const completeGetController = require('../controllers/auth/complete/get');
 const confirmGetController = require('../controllers/auth/confirm/get');
-const lostPasswordGetController = require('../controllers/auth/lost_password/get');
 const changePasswordGetController = require('../controllers/auth/change_password/get');
+const emailErrorGetController = require('../controllers/auth/email_error/get');
+const lostPasswordGetController = require('../controllers/auth/lost_password/get');
 const userGetController = require('../controllers/auth/user/get');
 
 const loginPostController = require('../controllers/auth/login/post');
@@ -38,12 +39,17 @@ router.get(
     confirmGetController
 );
 router.get(
-  '/lost_password',
-    lostPasswordGetController
-);
-router.get(
   '/change_password',
     changePasswordGetController
+);
+router.get(
+  '/email_error',
+    isLoggedIn,
+    emailErrorGetController
+);
+router.get(
+  '/lost_password',
+    lostPasswordGetController
 );
 router.get(
   '/user',
