@@ -164,5 +164,10 @@
 	"Confirm Your Email": "E-Postanı Onayla",
 	"We sent a confirmation link to the email you provided,": "Hesabını açmak için kullandığın",
 	". Please click the link on the email to confirm your email address. Make sure to check your spam folder.": "e-posta adresine bir e-posta gönderdik. Lütfen e-postadaki butonu kullanarak hesabını onayla. Eğer maili göremezsen spam klasörünü de kontrol etmeyi unutma",
-	"Resend Confirmation Link": "E-Postayı Yeniden Gönder"
+	"Resend Confirmation Link": "E-Postayı Yeniden Gönder",
+	"Loy Yazılım": "Loy Yazılım",
+	"Email Error": "E-Posta Hatası",
+	"There was an error sending the confirmation mail to your address,": "",
+	". Please try again in a few hours. If the problem continues, you may reach our team at hello@usersmagic.com.": " e-posta adresine mail atarken bir sorun ile karşılaştık. Lütfen bir iki saat içinde yeniden deneyin. Eğer problem devam ederse ekibimize hello@usersmagic.com e-posta adresinden ulaşabilirsiniz.",
+	"Gizlilik Sözleşmesi": "Gizlilik Sözleşmesi"
 }
