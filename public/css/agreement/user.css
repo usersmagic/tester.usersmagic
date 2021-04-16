@@ -39,7 +39,7 @@ span {
   color: rgb(24, 24, 24);
   font-weight: 300;
   font-size: 100%;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
 }
 .title {
   margin-top: 20px;
@@ -51,4 +51,8 @@ span {
   margin-bottom: 15px;
   font-weight: 600;
   font-size: 125%;
+}
+.bold {
+  font-weight: 600;
+  margin: 0px 5px;
 }
