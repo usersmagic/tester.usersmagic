@@ -3,6 +3,7 @@
 const User = require('../models/user/User');
 
 module.exports = (req, res, next) => {
+  return next();
   User.getUserById(req.session.user._id, (err, user) => {
     if (err || !user)
       return res.status(401).redirect('/auth/login' + ((req.query && req.query.lang) ? '?lang=' + req.query.lang : ''));
