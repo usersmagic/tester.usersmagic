@@ -5,6 +5,7 @@ const User = require('../../../models/user/User');
 const sendMail = require('../../../utils/sendMail');
 
 module.exports = (req, res) => {
+  return res.redirect('/filters');
   User.confirmUser(req.query.code, err => {
     if (!err) // The user is succesfully confirmed
       return res.redirect('/filters');
