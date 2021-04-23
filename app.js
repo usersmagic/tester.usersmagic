@@ -10,8 +10,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const i18n = require('i18n');
 
-const adminUpdate = require('./utils/adminUpdate')
-
 const MongoStore = require('connect-mongo')(session);
 
 const numCPUs = process.env.WEB_CONCURRENCY || require('os').cpus().length;
@@ -102,8 +100,6 @@ if (cluster.isMaster) {
   app.use('/wallet', walletRouteController);
   
   server.listen(PORT, () => {
-    if (cluster.worker.id == 1)
-      adminUpdate();
     console.log(`Server is on port ${PORT} as Worker ${cluster.worker.id} running @ process ${cluster.worker.process.pid}`);
   });
 }
