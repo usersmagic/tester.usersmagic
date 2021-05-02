@@ -4,7 +4,7 @@ const htmlToText = require('nodemailer-html-to-text').htmlToText;
 
 const key = require('../keys/gmailAPIKey.json');
 
-const MAIL_USER_NAME = 'usersmagic@usersmagic.com';
+const MAIL_USER_NAME = 'onboarding@usersmagic.com';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',

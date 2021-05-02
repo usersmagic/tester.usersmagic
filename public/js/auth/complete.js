@@ -10,7 +10,7 @@ window.onload = () => {
     if (event.target.id == 'country-visible-input')
       setTimeout(() => {
         document.querySelector('.phone-code').innerHTML = '+' + (countries.find(country => country.alpha2_code == countryInput.value) ? countries.find(country => country.alpha2_code == countryInput.value).phone_code : '0');
-      }, 100);
+      }, 200);
   });
 
   const badRequestError = document.getElementById('bad-request-error');
