@@ -69,7 +69,7 @@ const UserSchema = new Schema({
     maxlength: 1000
   },
   gender: {
-    // Gender of the user, required while completing acount. Possible values: [male, female, other, not_specified]
+    // Gender of the user, required while completing account. Possible values: [male, female, other, not_specified]
     type: String,
     default: null,
     maxlength: 1000
@@ -107,9 +107,11 @@ const UserSchema = new Schema({
     default: []
   },
   payment_number: {
-    // PayPal or Papara number of the user, required before user asking for a payment
+    // PayPal (email)(Everywhere), Papara (number 10-digits)(TR) or Venmo (username)(US) info of the user, required before user asking for a payment
     type: String,
-    default: null
+    unique: true,
+    default: null,
+    sparse: true // Allow null documents
   },
   credit: {
     // The current credit of user, gained from campaigns or projects
@@ -242,11 +244,18 @@ UserSchema.statics.createUser = function (data, callback) {
     if (err)
       return callback('database_error');
 
-    getUser(user, (err, user) => {
-      if (err) return callback(err);
-
-      return callback(null, user);
-    });
+    User.collection
+      .createIndex({
+        email: -1
+      })
+      .then(() => {
+        getUser(user, (err, user) => {
+          if (err) return callback(err);
+    
+          return callback(null, user);
+        });
+      })
+      .catch(err => callback('indexing_error'));
   });
 };
 
@@ -390,7 +399,7 @@ UserSchema.statics.updateUserPaymentNumber = function (id, data, callback) {
   // Change the payment number of the user with the given id. Cannot be called for a second time
   // Return an error if it exists
 
-  if (!id || !validator.isMongoId(id.toString()) || !data || typeof data != 'object' || !data.payment_number || isNaN(parseInt(data.payment_number.trim())))
+  if (!id || !validator.isMongoId(id.toString()) || !data || typeof data != 'object' || !data.payment_number)
     return callback('bad_request');
 
   const User = this;
@@ -402,9 +411,18 @@ UserSchema.statics.updateUserPaymentNumber = function (id, data, callback) {
     if (user.payment_number)
       return callback('bad_request');
 
+    if (user.country == 'tr' && (isNaN(parseInt(data.payment_number.trim())) || data.payment_number.length != 10)) // If TR, should be a number with 10 digits
+      return callback('bad_request');
+    else if (user.country == 'us' && typeof data.username != 'string') // If US, should be a string username
+      return callback('bad_request');
+    else if (!validator.isEmail(data.payment_number)) // For everywhere else, PayPal email
+      return callback('bad_request')
+
     User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
       payment_number: data.payment_number.trim()
     }}, err => {
+      if (err && err.code == 11000)
+        return callback('duplicated_unique_field');
       if (err)
         return callback('database_error');
 
