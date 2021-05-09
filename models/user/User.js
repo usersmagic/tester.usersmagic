@@ -654,7 +654,7 @@ UserSchema.statics.getSubmitionProjectAndQuestions = function (submition_id, use
 
             return next(null, {
               question,
-              answer: submition.answers[question._id.toString()] || (question.type == 'checked' ? [] : '')
+              answer: submition.answers[question._id.toString()] || (question.type == 'multiple_choice' && question.subtype == 'multiple' ? [] : '')
             });
           },
           (err, questions) => {

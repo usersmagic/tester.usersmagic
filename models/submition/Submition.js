@@ -180,8 +180,8 @@ SubmitionSchema.statics.updateAnswers = function (id, user_id, data, callback) {
     if (submition.user_id != user_id.toString() || submition.status != 'saved')
       return callback('document_validation');
 
-    if (Object.keys(submition.answers).find(key => data.answers[key] && typeof submition.answers[key] != typeof data.answers[key])) 
-      return callback('database_error');
+    // if (Object.keys(submition.answers).find(key => data.answers[key] && typeof submition.answers[key] != typeof data.answers[key])) 
+    //   return callback('database_error');
 
     Submition.findOneAndUpdate({
       _id: mongoose.Types.ObjectId(id.toString()),
