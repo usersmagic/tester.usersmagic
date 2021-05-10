@@ -16,6 +16,24 @@ const verifyPassword = require('./functions/verifyPassword');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
+  priority_index: {
+    // A number describing User's priority while joining new campaigns
+    // Calculated as last_login_time + 24*60*60*1000 * campaign_value
+    type: Number,
+    default: 0
+  },
+  last_login_time: {
+    // The UNIX time the User last logged in to the system
+    // Update on every 5 mins, prevent overload on database
+    type: Number,
+    default: 0
+  },
+  campaign_value: {
+    // The value describing how manys campaigns user joined. Unit is days
+    // Increased/Decreased by 0.25
+    type: Number,
+    default: 0.25
+  },
   email: {
     // Email address of the user
     type: String,
@@ -186,6 +204,18 @@ UserSchema.statics.findUser = function (email, password, callback) {
             return callback(null, user);
           });
         });
+      } else if (!user.campaign_value) {
+        User.findByIdAndUpdate(mongoose.Types.ObjectId(user._id.toString()), {$set: {
+          campaign_value: 0.25
+        }}, {new: true}, (err, user) => {
+          if (err) callback('database_error');
+
+          getUser(user, (err, user) => {
+            if (err) return callback(err);
+    
+            return callback(null, user);
+          });
+        });
       } else {
         getUser(user, (err, user) => {
           if (err) return callback(err);
@@ -193,6 +223,35 @@ UserSchema.statics.findUser = function (email, password, callback) {
           return callback(null, user);
         });
       }
+    });
+  });
+};
+
+UserSchema.statics.updateLastLoginTime = function (id, callback) {
+  // Find the User with the given id and update its last_login_time if it is before 5 mins
+  // Return an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()))
+    return callback('bad_request');
+
+  const five_mins = parseFloat(5 * 60 * 1000), one_day = parseFloat(24 * 60 * 60 * 1000);
+  const now = parseFloat((new Date).getTime());
+  const User = this;
+
+  User.findById(mongoose.Types.ObjectId(id.toString()), (err, user) => {
+    if (err) return callback('database_error');
+    if (!user) return callback('document_not_found');
+
+    if (user.last_login_time && user.last_login_time + five_mins > now)
+      return callback(null); // Do not update if it is before five minutes
+
+    User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
+      last_login_time: now,
+      priority_index: (now + one_day * (!isNaN(parseFloat(user.campaign_value)) ? Math.max(0.25, parseFloat(user.campaign_value)) : 0.25))
+    }}, err => {
+      if (err) return callback('database_error');
+
+      return callback(null);
     });
   });
 };
