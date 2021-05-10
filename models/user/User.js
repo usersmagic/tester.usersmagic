@@ -251,7 +251,19 @@ UserSchema.statics.updateLastLoginTime = function (id, callback) {
     }}, err => {
       if (err) return callback('database_error');
 
-      return callback(null);
+      User.collection
+        .createIndex({
+          on_waitlist: 1,
+          gender: 1,
+          birth_year: 1,
+          country: 1,
+          city: 1,
+          town: 1,
+          information: 1,
+          priority_index: 1
+        })
+        .then(() => callback(null))
+        .catch(err => callback('indexing_error'));
     });
   });
 };
@@ -407,8 +419,20 @@ UserSchema.statics.completeUser = function (id, data, callback) {
       }}, (err, user) => {
         if (err) return callback('database_error');
         if (!user) return callback('document_not_found');
-      
-        return callback(null);
+
+        User.collection
+          .createIndex({
+            on_waitlist: 1,
+            gender: 1,
+            birth_year: 1,
+            country: 1,
+            city: 1,
+            town: 1,
+            information: 1,
+            priority_index: 1
+          })
+          .then(() => callback(null))
+          .catch(err => callback('indexing_error'));
       });
     });
   });
