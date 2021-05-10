@@ -9,7 +9,12 @@ module.exports = (req, res, next) => {
         return res.status(401).redirect('/auth/login' + ((req.query && req.query.lang) ? '?lang=' + req.query.lang : ''));;
       
       req.session.user = user;
-      next();
+
+      User.updateLastLoginTime(req.session.user._id, err => {
+        if (err) return res.redirect('/');
+
+        return next();
+      });
     });
   } else {
     req.session.redirect = req.originalUrl;
