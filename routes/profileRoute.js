@@ -9,12 +9,22 @@ const isLocationComplete = require('../middleware/isLocationComplete');
 
 const indexGetController = require('../controllers/profile/index/get');
 
+const updatePostController = require('../controllers/profile/update/post');
+
 router.get(
   '/',
     isLoggedIn,
     isConfirmed,
     isComplete,
     indexGetController
+);
+
+router.post(
+  '/update',
+    isLoggedIn,
+    isConfirmed,
+    isComplete,
+    updatePostController
 );
 
 module.exports = router;

@@ -1,6 +1,24 @@
 extends ../partials/head
 block content
+  span.logout-title.display-none= __('Are you sure you want to logout?')
+  span.confirm-text.display-none= __('Confirm')
+  span.cancel-text.display-none= __('Cancel')
   input.display-none#countries(type="text" value=JSON.stringify(countries))
+  span.display-none#bad-request-error #{__('Please write your password')}
+  span.display-none#authentication-error #{__('Your password is wrong')}
+  span.display-none#network-error #{__('Please check your internet connection and try again')}
+  span.display-none#unknown-error #{__('An unknown error occured, please try again later')}
+  .close-account-outer-wrapper
+    .close-account-wrapper
+      span.close-account-title= __('Are you sure you want to close your account?')
+      span.close-account-text= __('Please write you email and password to confirm you want to close this account. Once you close your account, you will loose access to your current credit.')
+      input.general-input-with-border#close-account-password-input(type="password" placeholder=__('Password'))
+      .close-account-buttons-wrapper
+        .general-seablue-border-button.close-account-back-button
+          span= __('Cancel')
+        .close-account-confirm-button
+          span= __('Close My Account')
+      span.close-account-error
   .all-wrapper
     .navigation-bar-wrapper
       img.navigation-bar-logo(src="/res/images/logo.png" alt="usersmagic tester")
@@ -12,10 +30,10 @@ block content
         i.fas.fa-cog
     .all-content-wrapper
       .all-content-inner-wrapper
-        span.general-input-title Email
+        span.general-input-title= __('Email')
         span.general-input-with-border-no-change= user.email
-        span.general-input-title Full Name
-        input.general-input-with-border(type="text" placeholder="Full Name" value=user.name)
+        span.general-input-title= __('Full Name')
+        input.general-input-with-border#name-input(type="text" placeholder="Full Name" value=user.name)
         //- span.general-input-title Country of Residence
         //- .general-drop-down-list-outer-wrapper(style="z-index: 5;")
         //-   .general-drop-down-list-wrapper(style="z-index: 5;")
@@ -25,9 +43,12 @@ block content
         //-     .general-drop-down-choices-wrapper
         //-       each country in countries
         //-         span.general-drop-down-list-each-item(id=country.alpha2_code)= __(country.name)
-        span.general-input-title Phone Number
+        span.general-input-title= __('Phone Number')
         label.phone-code-input-wrapper
           span.phone-code#phone-code +#{country.phone_code}
           input.phone-code-input#phone-input(type="text" placeholder=__('Phone Number') value=user.phone.substr((1 + (country.phone_code).toString().length), user.phone.length))
-        .general-seablue-button
-          span Update
+        //- .general-seablue-button.update-button
+        //-   span= __('Update')
+        .general-seablue-border-button.logout-button
+          span= __('Logout')
+        span.close-account-button= __('Close My Account')

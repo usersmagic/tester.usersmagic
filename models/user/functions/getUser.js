@@ -4,6 +4,7 @@ module.exports = (user, callback) => {
 
 
   return callback(null, {
+    closed: user.closed,
     _id: user._id.toString(),
     agreement_approved: user.agreement_approved,
     email: user.email,
