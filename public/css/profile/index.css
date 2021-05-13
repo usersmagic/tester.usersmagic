@@ -46,3 +46,88 @@
   outline-width: 0.5px;
   padding-left: 50px;
 }
+
+.close-account-outer-wrapper {
+  z-index: 20;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(30, 30, 30, 0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.close-account-wrapper {
+  width: 500px;
+  height: fit-content;
+  min-height: fit-content;
+  background-color: rgb(254, 254, 254);
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+.close-account-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: rgb(78, 75, 102);
+  margin-bottom: 10px;
+}
+.close-account-text {
+  font-weight: 300;
+  font-size: 15px;
+  color: rgb(78, 75, 102);
+  margin-bottom: 15px;
+}
+.close-account-buttons-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.close-account-back-button {
+  width: 48% !important;
+  margin: 0px !important;
+}
+.close-account-confirm-button {
+  width: 48%;
+  height: 55px;
+  min-height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  border: 1px solid rgba(220, 0, 0, 0.8);
+  color: rgba(220, 0, 0, 0.9);
+}
+.close-account-confirm-button:hover {
+  border: 1px solid rgba(220, 0, 0, 1);
+  color: rgba(220, 0, 0, 1);
+}
+.close-account-confirm-button span {
+  font-weight: 600;
+  font-size: 12px;
+}
+.close-account-error {
+  color: rgb(220, 0, 0);
+  font-weight: 600;
+  font-size: 12px;
+  margin-top: 20px;
+  margin-bottom: -10px;
+  width: 100%;
+  text-align: center;
+}
+
+.close-account-button {
+  color: rgb(200, 0, 0);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1px;
+  align-self: center;
+  cursor: pointer;
+}
+.close-account-button:hover {
+  text-decoration: underline;
+}

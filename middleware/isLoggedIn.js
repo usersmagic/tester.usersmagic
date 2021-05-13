@@ -8,8 +8,10 @@ module.exports = (req, res, next) => {
       if (err || !user)
         return res.status(401).redirect('/auth/login' + ((req.query && req.query.lang) ? '?lang=' + req.query.lang : ''));;
       
-      req.session.user = user;
+      if (user.closed) // This account is closed
+        return res.redirect(`/auth/close?email=` + user.email);
 
+      req.session.user = user;
       User.updateLastLoginTime(req.session.user._id, err => {
         if (err) return res.redirect('/');
 

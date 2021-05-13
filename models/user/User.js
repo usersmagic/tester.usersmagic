@@ -11,6 +11,7 @@ const Target = require('../target/Target');
 
 const getUser = require('./functions/getUser');
 const hashPassword = require('./functions/hashPassword');
+const validateCountryCode = require('./functions/validateCountryCode');
 const verifyPassword = require('./functions/verifyPassword');
 
 const Schema = mongoose.Schema;
@@ -60,6 +61,12 @@ const UserSchema = new Schema({
   },
   confirmed: {
     // If the user confirmed his/her mail address, cannot use the app without confirming
+    type: Boolean,
+    default: false
+  },
+  closed: {
+    // The field showing if the account is closed
+    // Set completed, confirmed false and on_waitlist true for closed accounts
     type: Boolean,
     default: false
   },
@@ -179,6 +186,8 @@ UserSchema.statics.findUser = function (email, password, callback) {
   // Finds the user with the given email field, then verifies it with the given password
   // Returns the user or an error if there is one
 
+  console.log(email, password);
+
   if (!email || !password || !validator.isEmail(email))
     return callback('bad_request');
 
@@ -251,7 +260,19 @@ UserSchema.statics.updateLastLoginTime = function (id, callback) {
     }}, err => {
       if (err) return callback('database_error');
 
-      return callback(null);
+      User.collection
+        .createIndex({
+          on_waitlist: 1,
+          gender: 1,
+          birth_year: 1,
+          country: 1,
+          city: 1,
+          town: 1,
+          information: 1,
+          priority_index: 1
+        })
+        .then(() => callback(null))
+        .catch(err => callback('indexing_error'));
     });
   });
 };
@@ -315,6 +336,28 @@ UserSchema.statics.createUser = function (data, callback) {
         });
       })
       .catch(err => callback('indexing_error'));
+  });
+};
+
+UserSchema.statics.closeAccount = function (email, password, callback) {
+  // Set the closed field of the User with the given email and password
+  // Return an error if it exists
+
+  const User = this;
+
+  User.findUser(email, password, (err, user) => {
+    if (err) return callback(err);
+
+    User.findByIdAndUpdate(mongoose.Types.ObjectId(user._id.toString()), {$set: {
+      closed: true,
+      confirmed: false,
+      completed: false,
+      on_waitlist: true
+    }}, err => {
+      if (err) return callback('database_error');
+  
+      return callback(null);
+    });
   });
 };
 
@@ -407,8 +450,20 @@ UserSchema.statics.completeUser = function (id, data, callback) {
       }}, (err, user) => {
         if (err) return callback('database_error');
         if (!user) return callback('document_not_found');
-      
-        return callback(null);
+
+        User.collection
+          .createIndex({
+            on_waitlist: 1,
+            gender: 1,
+            birth_year: 1,
+            country: 1,
+            city: 1,
+            town: 1,
+            information: 1,
+            priority_index: 1
+          })
+          .then(() => callback(null))
+          .catch(err => callback('indexing_error'));
       });
     });
   });
@@ -426,31 +481,35 @@ UserSchema.statics.updateUser = function (id, data, callback) {
   User.findById(mongoose.Types.ObjectId(id.toString()), (err, user) => {
     if (err || !user) return callback('document_not_found');
 
-    if (data.city && data.town) {
-      Country.validateCityAndTown(user.country, data, res => {
-        if (!res) return callback('bad_request');
+    Country.getCountryWithAlpha2Code(user.country, (err, country) => {
+      if (err) return callback('document_not_found');
 
+      if (data.city && data.town) {
+        Country.validateCityAndTown(user.country, data, res => {
+          if (!res) return callback('bad_request');
+  
+          User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
+            name: (data.name && typeof data.name == 'string' ? data.name : user.name),
+            phone: (data.phone && validator.isMobilePhone(data.phone.toString()) ? data.phone : user.phone),
+            city: data.city,
+            town: data.town 
+          }}, err => {
+            if (err) return callback('database_error');
+    
+            return callback(null);
+          });
+        })
+      } else {
         User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
           name: (data.name && typeof data.name == 'string' ? data.name : user.name),
-          phone: (data.phone && validator.isMobilePhone(data.phone.toString()) ? data.phone : user.phone),
-          city: data.city,
-          town: data.town 
+          phone: (validateCountryCode(data.phone, country.phone_code) ? data.phone : user.phone)   
         }}, err => {
           if (err) return callback('database_error');
   
           return callback(null);
         });
-      })
-    } else {
-      User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
-        name: (data.name && typeof data.name == 'string' ? data.name : user.name),
-        phone: (data.phone && validator.isMobilePhone(data.phone.toString()) ? data.phone : user.phone)   
-      }}, err => {
-        if (err) return callback('database_error');
-
-        return callback(null);
-      });
-    }
+      }
+    });
   });
 };
 
