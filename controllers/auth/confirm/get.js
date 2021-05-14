@@ -5,7 +5,6 @@ const User = require('../../../models/user/User');
 const sendMail = require('../../../utils/sendMail');
 
 module.exports = (req, res) => {
-  return res.redirect('/filters');
   User.confirmUser(req.query.code, err => {
     if (!err) // The user is succesfully confirmed
       return res.redirect('/filters');
@@ -19,13 +18,15 @@ module.exports = (req, res) => {
       if (err) return res.redirect('/');
 
       sendMail({
-        email: user.email,
+        data: {
+          title: res.__('Welcome to Usersmagic!'),
+          text: res.__('We are excited to have you get started. Please confirm your email address before you start earning with Usersmagic.'),
+          url: `https://tester.usersmagic.com/auth/confirm?code=${code}`,
+          button: res.__('CONFIRM EMAIL')
+        },
         subject: res.__('Welcome to Usersmagic!'),
-        title: res.__('Welcome to Usersmagic!'),
-        text: res.__('We\'re excited to have you get started. Please confirm your email address before you start earning with Usersmagic!'),
-        button: res.__('CONFIRM EMAIL'),
-        url: `https://tester.usersmagic.com/auth/confirm?code=${code}`
-      }, 'title_text_button_template', err => {
+        to: user.email
+      }, err => {
         if (err) return res.redirect('/auth/email_error');
 
         return res.render('auth/confirm', {

@@ -186,8 +186,6 @@ UserSchema.statics.findUser = function (email, password, callback) {
   // Finds the user with the given email field, then verifies it with the given password
   // Returns the user or an error if there is one
 
-  console.log(email, password);
-
   if (!email || !password || !validator.isEmail(email))
     return callback('bad_request');
 
@@ -884,7 +882,6 @@ UserSchema.statics.getInReviewSubmitionsOfUser = function (user_id, callback) {
       );
     })
     .catch((err) => {
-      console.log(err);
       return callback('database_error');
     });
 };
