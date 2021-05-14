@@ -52,7 +52,7 @@ if (cluster.isMaster) {
   const agreementRouteController = require('./routes/agreementRoute');
   const waitingRouteController = require('./routes/waitingRoute');
   const walletRouteController = require('./routes/walletRoute');
-  
+
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'pug');
   
