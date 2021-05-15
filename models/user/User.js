@@ -527,11 +527,11 @@ UserSchema.statics.updateUserPaymentNumber = function (id, data, callback) {
     if (user.payment_number)
       return callback('bad_request');
 
-    if (user.country == 'tr' && (isNaN(parseInt(data.payment_number.trim())) || data.payment_number.length != 10)) // If TR, should be a number with 10 digits
+    if (user.country == 'tr' && (isNaN(parseInt(data.payment_number.trim())) || data.payment_number.trim().length != 10)) // If TR, should be a number with 10 digits
       return callback('bad_request');
     else if (user.country == 'us' && typeof data.username != 'string') // If US, should be a string username
       return callback('bad_request');
-    else if (!validator.isEmail(data.payment_number)) // For everywhere else, PayPal email
+    else if (user.country != 'tr' && user.country != 'us' && !validator.isEmail(data.payment_number)) // For everywhere else, PayPal email
       return callback('bad_request')
 
     User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {

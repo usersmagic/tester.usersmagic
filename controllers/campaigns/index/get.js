@@ -7,10 +7,10 @@ module.exports = (req, res) => {
   const user = req.session.user;
 
   Target.getProjectsUserCanJoin(user._id, (err, projects) => {
-    if (err) return res.redirect('/');
+    if (err) return res.redirect('/auth/login');
 
     Country.getCountryWithAlpha2Code(user.country, (err, country) => {
-      if (err) return res.redirect('/');
+      if (err) return res.redirect('/auth/login');
 
       let total = 0;
 
