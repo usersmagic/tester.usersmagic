@@ -11,6 +11,7 @@ window.onload = () => {
   const confirmPaymentNumberText = document.querySelector('.confirm-payment-number-text').innerHTML;
   const numberChangedTitle = document.querySelector('.number-changed-title').innerHTML;
   const numberChangedText = document.querySelector('.number-changed-text').innerHTML;
+  const paymentNumberBadRequestError = document.querySelector('.payment-number-bad-request-error').innerHTML;
   const unknownErrorTitle = document.querySelector('.unknown-error-title').innerHTML;
   const tryAgainLaterText = document.querySelector('.try-again-later-text').innerHTML;
   const notEnoughCreditTitle = document.querySelector('.not-enough-credit-title').innerHTML;
@@ -63,11 +64,18 @@ window.onload = () => {
               payment_number: paymentNumberInput.value.trim()
             }, res => {
               if (!res.success) {
-                createConfirm({
-                  title: unknownErrorTitle,
-                  text: tryAgainLaterText,
-                  reject: confirmText
-                }, res => { return });
+                if (res.error == 'bad_request')
+                  createConfirm({
+                    title: paymentNumberBadRequestError,
+                    text: '',
+                    reject: confirmText
+                  }, res => { return });
+                else
+                  createConfirm({
+                    title: unknownErrorTitle,
+                    text: tryAgainLaterText,
+                    reject: confirmText
+                  }, res => { return });
               } else {
                 createConfirm({
                   title: numberChangedTitle,
