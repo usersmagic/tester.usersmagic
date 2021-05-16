@@ -14,16 +14,16 @@ const updatePostController = require('../controllers/profile/update/post');
 router.get(
   '/',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     indexGetController
 );
 
 router.post(
   '/update',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     updatePostController
 );
 

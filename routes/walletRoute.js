@@ -13,23 +13,23 @@ const numberPostController = require('../controllers/wallet/number/post');
 router.get(
   '/',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     indexGetController
 );
 router.get(
   '/payment',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     paymentGetController
 );
 
 router.post(
   '/number',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     numberPostController
 );
 

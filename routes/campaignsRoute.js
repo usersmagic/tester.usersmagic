@@ -14,23 +14,23 @@ const joinGetController = require('../controllers/campaigns/join/get');
 router.get(
   '/',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     indexGetController
 );
 router.get(
   '/join',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     // isLocationComplete,
     joinGetController
 );
 router.get(
   '/user',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     userGetController
 );
 

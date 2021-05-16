@@ -11,7 +11,7 @@ module.exports = (req, res) => {
     }
 
     req.session.user = user;
-    res.write(JSON.stringify({ success: true }));
+    res.write(JSON.stringify({ success: true, redirect: req.session.redirect }));
     return res.end();
   });
 }
