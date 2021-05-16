@@ -14,7 +14,7 @@ module.exports = (req, res) => {
 
     sendMail({
       template: user.country == 'tr' ? 'password_lost_tr' : 'password_lost_en',
-      name: user.name.split(' ')[0],
+      name: user.name ? user.name.split(' ')[0] : user.email,
       code: user.password_reset_code,
       to: user.email
     }, err => {
