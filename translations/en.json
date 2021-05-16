@@ -175,7 +175,7 @@
 	"We're excited to have you get started. Please confirm your email address before you start earning with Usersmagic.": "We're excited to have you get started. Please confirm your email address before you start earning with Usersmagic.",
 	"CONFIRM EMAIL": "CONFIRM EMAIL",
 	"Confirm Your Email": "Confirm Your Email",
-	"We sent a confirmation link to the email you provided,":	"We sent a confirmation link to the email you provided,",
+	"We sent a confirmation link to the email you provided,": "We sent a confirmation link to the email you provided,",
 	". Please click the link on the email to confirm your email address. Make sure to check your spam folder.": ". Please click the link on the email to confirm your email address. Make sure to check your spam folder.",
 	"Resend Confirmation Link": "Resend Confirmation Link",
 	"Already a member?": "Already a member?",
@@ -221,5 +221,13 @@
 	"Are you sure you want to close your account?": "Are you sure you want to close your account?",
 	"Please enter a valid Venmo username.": "Please enter a valid Venmo username.",
 	"Please enter a valid 10-digits Papara number.": "Please enter a valid 10-digits Papara number.",
-	"Please enter a valid PayPal email": "Please enter a valid PayPal email"
+	"Please enter a valid PayPal email": "Please enter a valid PayPal email",
+	"E-mail": "E-mail",
+	"Send Email": "Send Email",
+	"Please write your email": "Please write your email",
+	"This account is not found": "This account is not found",
+	"We send an email to you with the instructions to reset your password. Please check your email.": "We send an email to you with the instructions to reset your password. Please check your email.",
+	"Change Password": "Change Password",
+	"Please write a 6 digits long password and confirm": "Please write a 6 digits long password and confirm",
+	"Your request for changing your password has passed 1 hour. Please make a new request.": "Your request for changing your password has passed 1 hour. Please make a new request."
 }

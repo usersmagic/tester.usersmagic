@@ -337,6 +337,72 @@ UserSchema.statics.createUser = function (data, callback) {
   });
 };
 
+UserSchema.statics.generateResetPasswordCode = function () {
+  // Generate a new reset password code with 11 digits and return
+  
+  const length = 11;
+
+  let str = "";
+  for (let i = 0; i < length; i++)
+    str += (Math.floor(Math.random() * 10) + '0');
+  return str;
+}
+
+UserSchema.statics.updateResetPasswordCode = function (data, callback) {
+  // Update the reset password code and time of the User with the given email on the data
+  // Return the user and code or an error if it exists
+
+  if (!data || !data.email || !validator.isEmail(data.email))
+    return callback('bad_request');
+
+  const User = this;
+
+  User.findOneAndUpdate({
+    email: data.email
+  }, {$set: {
+    password_reset_code: User.generateResetPasswordCode(),
+    password_reset_last_date: (new Date).getTime() + 3600000
+  }}, {new: true}, (err, user) => {
+    if (err) return callback('database_error');
+    if (!user) return callback('document_not_found');
+  
+    return callback(null, user);
+  });
+};
+
+UserSchema.statics.resetPassword = function (data, callback) {
+  // Reset the password of the given User with the email and code
+  // Return an error if it exists
+
+  if (!data.email || !validator.isEmail(data.email) || !data.code || !data.password)
+    return callback('bad_request');
+
+  if (data.password.length < 6)
+    return callback('password_length');
+
+  const User = this;
+
+  User.findOne({
+    email: data.email,
+    password_reset_code: data.code
+  }, (err, user) => {
+    if (err || !user) return callback('bad_request');
+
+    if (user.password_reset_last_date < (new Date).getTime())
+      return callback('request_timeout');
+
+    user.password = data.password;
+    user.password_reset_code = null;
+    user.password_reset_last_date = null;
+
+    user.save(err => {
+      if (err) return callback('database_error');
+
+      return callback(null);
+    });
+  });
+};
+
 UserSchema.statics.closeAccount = function (email, password, callback) {
   // Set the closed field of the User with the given email and password
   // Return an error if it exists

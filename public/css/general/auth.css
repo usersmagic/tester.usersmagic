@@ -68,6 +68,14 @@
   margin-top: 20px;
   display: none;
 }
+.no-error-text {
+  color: rgb(46, 197, 206);
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
+  display: none;
+}
 
 .change-page-wrapper {
   display: flex;
