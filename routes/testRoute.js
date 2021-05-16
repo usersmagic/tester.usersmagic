@@ -20,8 +20,8 @@ const filterSavePostController = require('../controllers/test/filter/save/post')
 router.get(
   '/campaign',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     campaignIndexGetController
 );
 router.get(
@@ -31,15 +31,15 @@ router.get(
 router.get(
   '/filter',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     filterIndexGetController
 );
 router.get(
   '/campaign/submit',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     campaignSubmitGetController
 );
 router.get(
@@ -49,16 +49,16 @@ router.get(
 router.get(
   '/filter/submit',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     filterSubmitGetController
 );
 
 router.post(
   '/campaign/save',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     campaignSavePostController
 );
 router.post(
@@ -68,8 +68,8 @@ router.post(
 router.post(
   '/filter/save',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     filterSavePostController
 );
 

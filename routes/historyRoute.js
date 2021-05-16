@@ -10,8 +10,8 @@ const indexGetController = require('../controllers/history/get');
 router.get(
   '/',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     indexGetController
 );
 

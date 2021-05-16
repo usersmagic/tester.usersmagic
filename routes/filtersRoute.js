@@ -12,15 +12,15 @@ const joinGetController = require('../controllers/filters/join/get');
 router.get(
   '/',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     indexGetController
 );
 router.get(
   '/join',
     isLoggedIn,
-    isConfirmed,
     isComplete,
+    isConfirmed,
     // isLocationComplete,
     joinGetController
 );

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const isConfirmed = require('../middleware/isConfirmed');
+const isComplete = require('../middleware/isComplete');
 const isLoggedIn = require('../middleware/isLoggedIn');
 
 const loginGetController = require('../controllers/auth/login/get');
@@ -42,12 +42,12 @@ router.get(
 router.get(
   '/complete',
     isLoggedIn,
-    isConfirmed,
     completeGetController
 );
 router.get(
   '/confirm', 
     isLoggedIn,
+    isComplete,
     confirmGetController
 );
 router.get(
@@ -84,7 +84,6 @@ router.post(
 router.post(
   '/complete',
     isLoggedIn,
-    isConfirmed,
     completePostController
 );
 router.post(

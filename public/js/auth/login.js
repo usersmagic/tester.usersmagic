@@ -38,6 +38,8 @@ window.onload = () => {
         else
           return unknownError.style.display = 'block';
       } else {
+        if (res.redirect)
+          return window.location = res.redirect;
         return window.location = '/campaigns';
       }
     });
