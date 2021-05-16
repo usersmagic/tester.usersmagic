@@ -18,13 +18,9 @@ module.exports = (req, res) => {
       if (err) return res.redirect('/');
 
       sendMail({
-        data: {
-          title: res.__('Welcome to Usersmagic!'),
-          text: res.__('We are excited to have you get started. Please confirm your email address before you start earning with Usersmagic.'),
-          url: `https://tester.usersmagic.com/auth/confirm?code=${code}`,
-          button: res.__('CONFIRM EMAIL')
-        },
-        subject: res.__('Welcome to Usersmagic!'),
+        template: user.country == 'tr' ? 'confirm_tr' : 'confirm_en',
+        name: user.name.split(' ')[0],
+        code: code,
         to: user.email
       }, err => {
         if (err) return res.redirect('/auth/email_error');

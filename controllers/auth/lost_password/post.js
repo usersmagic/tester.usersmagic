@@ -1,40 +1,30 @@
+// Update the reset password code and time of the User with the given email
+// XMLHTTP Request
+
 const User = require('../../../models/user/User');
 
 const sendMail = require('../../../utils/sendMail');
 
-const generateRandomNumber = length => {
-  let str = "";
-  for (let i = 0; i < length; i++)
-    str += (Math.floor(Math.random() * 10) + '0');
-  return str;
-}
-
 module.exports = (req, res) => {
-  if (!req.body || !req.body.email)
-    return res.redirect('/auth/lost_password');
-
-  User.findOneAndUpdate({
-    email: req.body.email
-  }, {$set: {
-    password_reset_code: generateRandomNumber(11),
-    password_reset_last_date: (new Date).getTime() + 3600000
-  }}, {new: true}, (err, user) => {
-    if (err || !user) {
-      req.session.error = "bad request";
-      return res.redirect('/auth/lost_password');
+  User.updateResetPasswordCode(req.body, (err, user) => {
+    if (err) {
+      res.write(JSON.stringify({ error: err, success: false }));
+      return res.end();
     }
 
     sendMail({
-      email: user.email,
-      code: user.password_reset_code
-    }, 'change_password', err => {
+      template: user.country == 'tr' ? 'password_lost_tr' : 'password_lost_en',
+      name: user.name.split(' ')[0],
+      code: user.password_reset_code,
+      to: user.email
+    }, err => {
       if (err) {
-        req.session.error = "unknown";
-        return res.redirect('/auth/lost_password');
+        res.write(JSON.stringify({ error: err, success: false }));
+        return res.end();
       }
-
-      req.session.error = 'completed';
-      return res.redirect('/auth/lost_password');
+  
+      res.write(JSON.stringify({ success: true }));
+      return res.end();
     });
   });
 }
