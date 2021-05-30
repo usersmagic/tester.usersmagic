@@ -215,8 +215,6 @@ function createAllWrapperContent() {
 
   if (last_question == -1) {
     welcomePageOuterWrapper.style.display = 'flex';
-    welcomePageOuterWrapper.childNodes[0].style.display = 'flex';
-    welcomePageOuterWrapper.childNodes[1].style.display = 'none';
   } else if (last_question == questions.length) {
     finishPageOuterWrapper.style.display = 'flex';
     createFinishPageQuestionsWrapperContent();
