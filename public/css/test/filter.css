@@ -212,6 +212,28 @@
   color: rgb(254, 254, 254);
   font-size: 10px;
 }
+.each-question-other-option-input-wrapper {
+  height: 55px;
+  min-height: 55px;
+  width: 100%;
+  padding: 0px 22px;
+  border: 1px solid rgba(151, 151, 151, 0.3);
+  border-radius: 5px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.each-question-other-option-input-wrapper input {
+  width: 100%;
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: rgb(78, 75, 102);
+  font-size: 12px;
+  font-weight: 600;
+}
 
 .each-question-opinion-outer-wrapper {
   width: 100%;

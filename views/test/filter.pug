@@ -17,6 +17,7 @@ block content
   span.clear-answers.display-none= __('Clear answer')
   span.are-you-sure-title.display-none= __('Are you sure you want to continue?')
   span.no-update-after-submit-text.display-none= __('You cannot edit or delete your answers once you submit your test. You must rejoin the campaign if your answers are rejected, so please double-check what you wrote. Thank you :)')
+  span.other.display-none= __('Other')
   .all-wrapper
     .welcome-page-outer-wrapper(style=(submition.last_question == -1 ? 'display: flex;' : 'display: none;'))
       .welcome-page-wrapper
@@ -107,6 +108,17 @@ block content
                   .radio-choice-wrapper
                     .radio-choice-icon
                 span= choice
+            if questions[submition.last_question].question.other_option
+              if questions[submition.last_question].question.choices.includes(questions[submition.last_question].answer)
+                .each-question-other-option-input-wrapper
+                  .radio-choice-wrapper
+                    .radio-choice-icon
+                  input(type="text" placeholder=__('Other'))
+              else
+                .each-question-other-option-input-wrapper
+                  .radio-choice-wrapper.selected-choice
+                    .radio-choice-icon
+                  input(type="text" placeholder=__('Other') value=questions[submition.last_question].answer)
           else if questions[submition.last_question].question.type == 'checked'
             each choice in questions[submition.last_question].question.choices
               .each-question-choice.each-question-choice-checked
@@ -117,6 +129,17 @@ block content
                   .checked-choice-wrapper
                     i.checked-choice-icon.fas.fa-check
                 span= choice
+            if questions[submition.last_question].question.other_option
+              if questions[submition.last_question].answer.find(ans => !questions[submition.last_question].question.choices.includes(ans))
+                .each-question-other-option-input-wrapper
+                  .checked-choice-wrapper.selected-choice
+                    i.checked-choice-icon.fas.fa-check
+                  input(type="text" placeholder=__('Other') value=questions[submition.last_question].answer.find(ans => !questions[submition.last_question].question.choices.includes(ans)))
+              else
+                .each-question-other-option-input-wrapper
+                  .checked-choice-wrapper
+                    i.checked-choice-icon.fas.fa-check
+                  input(type="text" placeholder=__('Other'))
           span.clear-question-button= __('Clear answer')
       .next-button
         i.fas.fa-arrow-right
