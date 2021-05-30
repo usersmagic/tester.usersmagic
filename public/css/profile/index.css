@@ -140,5 +140,6 @@
   .close-account-button {
     bottom: 80px;
     right: 10px;
+    font-size: 12px;
   }
 }
