@@ -222,12 +222,13 @@
 	"Please enter a valid Venmo username.": "Lütfen geçerli bir Venmo kullanıcı adı girin.",
 	"Please enter a valid 10-digits Papara number.": "Lütfen 10 haneli bir Papara numarası girin.",
 	"Please enter a valid PayPal email": "Lütfen geçerli bir PayPal e-posta adresi girin.",
-	"Please write you password to confirm you want to close this account. Once you close your account, you will loose access to your current credit.": "Please write you password to confirm you want to close this account. Once you close your account, you will loose access to your current credit.",
+	"Please write you password to confirm you want to close this account. Once you close your account, you will loose access to your current credit.": "Hesabınızı kapatmak istediğinizi onaylamak için lütfen şifrenizi yazın. Hesabınızı kapattığınız zaman şu an mevcut olan kredinize erişimi kaybedeceksiniz.",
 	"Send Email": "E-Posta Gönder",
 	"Please write your email": "Lütfen e-posta adresinizi yazın",
 	"This account is not found": "Hesap bulunamadı",
 	"We send an email to you with the instructions to reset your password. Please check your email.": "Şifrenizi sıfırlamak için gereken talimatları bu adrese e-posta ile gönderdik. Lütfen e-posta adresinizi kontrol edin.",
 	"Change Password": "Şifreyi Değiştri",
 	"Please write a 6 digits long password and confirm": "Lütfen en az 6 haneli bir şifre oluşturun ve tekrarlayın",
-	"Your request for changing your password has passed 1 hour. Please make a new request.": "Şifrenizi değiştirme talebiniz 1 saati geçti. Lütfen yeni bir talepte bulunun."
+	"Your request for changing your password has passed 1 hour. Please make a new request.": "Şifrenizi değiştirme talebiniz 1 saati geçti. Lütfen yeni bir talepte bulunun.",
+	"": ""
 }

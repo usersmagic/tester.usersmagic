@@ -196,10 +196,14 @@
   margin-right: 5px;
 }
 .selected-no-button {
-  border: 1px solid rgba(255, 0, 0, 0.5) !important;
+  border: 2px solid rgba(255, 0, 0, 0.5) !important;
+  width: 198px !important;
+  height: 198px !important;
 }
 .selected-yes-button {
-  border: 1px solid rgba(46, 197, 206, 0.7) !important;
+  border: 2px solid rgba(46, 197, 206, 0.7) !important;
+  width: 198px !important;
+  height: 198px !important;
 }
 .each-question-yes-button {
   margin-left: 5px;
