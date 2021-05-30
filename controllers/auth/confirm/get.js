@@ -19,7 +19,7 @@ module.exports = (req, res) => {
 
       sendMail({
         template: user.country == 'tr' ? 'confirm_tr' : 'confirm_en',
-        name:  user.email,
+        name:  user.name ? user.name.split(' ')[0] : user.email,
         code: code,
         to: user.email
       }, err => {

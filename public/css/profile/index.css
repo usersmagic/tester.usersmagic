@@ -1,5 +1,6 @@
 .all-content-wrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -121,13 +122,23 @@
 }
 
 .close-account-button {
-  color: rgb(200, 0, 0);
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  color: rgb(196, 196, 196);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 1px;
   align-self: center;
   cursor: pointer;
 }
 .close-account-button:hover {
   text-decoration: underline;
+}
+
+@media only screen and (max-width: 500px) and (min-width: 300px) {
+  .close-account-button {
+    bottom: 80px;
+    right: 10px;
+  }
 }
