@@ -5,7 +5,7 @@ function serverRequest (url, method, data, callback) {
 
   const xhr = new XMLHttpRequest();
   xhr.open(method, url);
-  
+
   if (method == 'POST') {
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.send(JSON.stringify(data));

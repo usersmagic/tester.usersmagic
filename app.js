@@ -3,7 +3,7 @@ const cluster = require('cluster');
 const http = require('http');
 const path = require('path');
 const session = require('express-session');
-const cookieParser = require('cookie-parser');  
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const favicon = require('serve-favicon');
 const mongoose = require('mongoose');
@@ -27,19 +27,19 @@ if (cluster.isMaster) {
 } else {
   const app = express();
   const server = http.createServer(app);
-  
+
   i18n.configure({
     locales:['en', 'tr'],
     directory: __dirname + '/translations',
     queryParameter: 'lang',
     defaultLocale: 'en'
   });
-  
+
   dotenv.config({ path: path.join(__dirname, '.env') });
 
   const PORT = process.env.PORT || 3000;
   const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/usersmagic';
-  
+
   const indexRouteController = require('./routes/indexRoute');
   const authRouteController = require('./routes/authRoute');
   const campaignsRouteController = require('./routes/campaignsRoute');
@@ -52,19 +52,20 @@ if (cluster.isMaster) {
   const agreementRouteController = require('./routes/agreementRoute');
   const waitingRouteController = require('./routes/waitingRoute');
   const walletRouteController = require('./routes/walletRoute');
+  const discordRouteController = require('./routes/discordRoute');
 
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'pug');
-  
+
   mongoose.connect(mongoUri, { useNewUrlParser: true, auto_reconnect: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
-  
+
   app.use(express.static(path.join(__dirname, 'public')));
-  
+
   app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-  
+
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
-  
+
   const sessionOptions = session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -76,7 +77,7 @@ if (cluster.isMaster) {
       mongooseConnection: mongoose.connection
     })
   });
-  
+
   app.use(sessionOptions);
   app.use(cookieParser());
   app.use((req, res, next) => {
@@ -85,7 +86,7 @@ if (cluster.isMaster) {
   });
 
   app.use(i18n.init);
-  
+
   app.use('/', indexRouteController);
   app.use('/auth', authRouteController);
   app.use('/campaigns', campaignsRouteController);
@@ -98,7 +99,8 @@ if (cluster.isMaster) {
   app.use('/agreement', agreementRouteController);
   app.use('/waiting', waitingRouteController);
   app.use('/wallet', walletRouteController);
-  
+  app.use('/discord', discordRouteController);
+
   server.listen(PORT, () => {
     console.log(`Server is on port ${PORT} as Worker ${cluster.worker.id} running @ process ${cluster.worker.process.pid}`);
   });
