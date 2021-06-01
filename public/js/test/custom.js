@@ -58,6 +58,8 @@ function createQuestion(question, answer, index) {
     const noSpan = document.createElement('span');
     noSpan.innerHTML = no;
     noButton.appendChild(noSpan);
+    if (answer == 'no')
+      noButton.classList.add('selected-no-button');
     yesnoButtonsWrapper.appendChild(noButton);
 
     const yesButton = document.createElement('div');
@@ -69,6 +71,8 @@ function createQuestion(question, answer, index) {
     const yesSpan = document.createElement('span');
     yesSpan.innerHTML = yes;
     yesButton.appendChild(yesSpan);
+    if (answer == 'yes')
+      yesButton.classList.add('selected-yes-button');
     yesnoButtonsWrapper.appendChild(yesButton);
 
     questionWrapper.appendChild(yesnoButtonsWrapper);
@@ -215,8 +219,6 @@ function createAllWrapperContent() {
 
   if (last_question == -1) {
     welcomePageOuterWrapper.style.display = 'flex';
-    welcomePageOuterWrapper.childNodes[0].style.display = 'flex';
-    welcomePageOuterWrapper.childNodes[1].style.display = 'none';
   } else if (last_question == questions.length) {
     finishPageOuterWrapper.style.display = 'flex';
     createFinishPageQuestionsWrapperContent();

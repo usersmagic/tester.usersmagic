@@ -2,7 +2,7 @@ let questions = [], submition, answers = {};
 let question_types = {
   short_text: '', long_text: '', range: '', radio: '', checked: ''
 };
-let yourAnswer;
+let yourAnswer, other;
 let unknownErrorTitle, tryAgainLaterText, okayText, confirmText, cancelText, required, clearAnswers, areYouSureTitle, noUpdateAfterSubmitText;
 
 function createProgressBar(index) {
@@ -15,6 +15,43 @@ function createProgressBar(index) {
   questionProgressBarInnerLine.classList.add('question-progress-bar-inner-line');
   questionProgressBarInnerLine.style.width = ((index * questionProgressBar.offsetWidth) / (questions.length-1)) + 'px';
   questionProgressBar.appendChild(questionProgressBarInnerLine);
+}
+
+function createOtherOptionInput(wrapper, type, value) {
+  const eachQuestionOtherOptionInputWrapper = document.createElement('div');
+  eachQuestionOtherOptionInputWrapper.classList.add('each-question-other-option-input-wrapper');
+
+  if (type == 'radio') {
+    const radioChoiceWrapper = document.createElement('div');
+    radioChoiceWrapper.classList.add('radio-choice-wrapper');
+    if (value.length)
+      radioChoiceWrapper.classList.add('selected-choice');
+    const radioChoiceIcon = document.createElement('div');
+    radioChoiceIcon.classList.add('radio-choice-icon');
+    radioChoiceWrapper.appendChild(radioChoiceIcon);
+    eachQuestionOtherOptionInputWrapper.appendChild(radioChoiceWrapper);
+  } else if (type == 'checked') {
+    const checkedChoiceWrapper = document.createElement('div');
+    checkedChoiceWrapper.classList.add('checked-choice-wrapper');
+    if (value.length)
+      checkedChoiceWrapper.classList.add('selected-choice');
+    const checkedChoiceIcon = document.createElement('div');
+    checkedChoiceIcon.classList.add('checked-choice-icon');
+    checkedChoiceIcon.classList.add('fas');
+    checkedChoiceIcon.classList.add('fa-check');
+    checkedChoiceWrapper.appendChild(checkedChoiceIcon);
+    eachQuestionOtherOptionInputWrapper.appendChild(checkedChoiceWrapper);
+  } else {
+    return;
+  }
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = value;
+  input.placeholder = other;
+  eachQuestionOtherOptionInputWrapper.appendChild(input);
+
+  wrapper.appendChild(eachQuestionOtherOptionInputWrapper);
 }
 
 function createQuestion(question, answer, index) {
@@ -135,6 +172,19 @@ function createQuestion(question, answer, index) {
       eachQuestionChoice.appendChild(span);
       questionWrapper.appendChild(eachQuestionChoice);
     });
+    if (question.other_option) {
+      if (question.type == 'radio') {
+        if (question.choices.includes(answer))
+          createOtherOptionInput(questionWrapper, question.type, '');
+        else
+          createOtherOptionInput(questionWrapper, question.type, answer);
+      } else {
+        if (answer.find(ans => !question.choices.includes(ans)))
+          createOtherOptionInput(questionWrapper, question.type, answer.find(ans => !question.choices.includes(ans)));
+        else
+          createOtherOptionInput(questionWrapper, question.type, '');
+      }
+    }
   }
 
   const clearQuestionButton = document.createElement('span');
@@ -192,8 +242,6 @@ function createAllWrapperContent() {
 
   if (last_question == -1) {
     welcomePageOuterWrapper.style.display = 'flex';
-    welcomePageOuterWrapper.childNodes[0].style.display = 'flex';
-    welcomePageOuterWrapper.childNodes[1].style.display = 'none';
   } else if (last_question == questions.length) {
     finishPageOuterWrapper.style.display = 'flex';
     createFinishPageQuestionsWrapperContent();
@@ -263,6 +311,7 @@ window.onload = () => {
   question_types.checked = document.querySelector('.checked-type').innerHTML;
 
   yourAnswer = document.querySelector('.your-answer').innerHTML;
+  other = document.querySelector('.other').innerHTML;
 
   for (let i = 0; i < questions.length; i++)
     answers[questions[i].question._id] = Array.isArray(questions[i].answer) ? questions[i].answer.map(answer => answer) : questions[i].answer; // Duplicate the array to avoid pointer errors
@@ -420,6 +469,8 @@ window.onload = () => {
       allClickedChoices.forEach(choice => {
         choice.classList.remove('selected-choice');
       });
+      if (document.querySelector('.each-question-other-option-input-wrapper'))
+        document.querySelector('.each-question-other-option-input-wrapper').childNodes[1].value = '';
 
       document.querySelector('.next-button').style.cursor = 'not-allowed';
     }
@@ -430,6 +481,44 @@ window.onload = () => {
     if (event.target.classList.contains('answer-input')) {
       questions[submition.last_question].answer = event.target.value;
       answers[questions[submition.last_question].question._id] = event.target.value;
+      saveAnswers(res => { return });
+    }
+
+    // Listen for other_option on radio and checked choices
+    if (event.target.parentNode.classList.contains('each-question-other-option-input-wrapper')) {
+      const question = questions[submition.last_question].question;
+
+      if (question.type == 'radio') {
+        if (document.querySelector('.selected-choice'))
+          document.querySelector('.selected-choice').classList.remove('selected-choice');
+        questions[submition.last_question].answer = '';
+        answers[questions[submition.last_question].question._id] = '';
+        
+        if (event.target.value.length) {
+          event.target.parentNode.childNodes[0].classList.add('selected-choice');
+          questions[submition.last_question].answer = event.target.value;
+          answers[questions[submition.last_question].question._id] = event.target.value;
+        }
+      } else if (question.type == 'checked') {
+        if (event.target.value.length) {
+          event.target.parentNode.childNodes[0].classList.add('selected-choice');
+
+          // Delete old custom choices
+          questions[submition.last_question].answer = questions[submition.last_question].answer.filter(choice => question.choices.includes(choice));
+          answers[questions[submition.last_question].question._id] = answers[questions[submition.last_question].question._id].filter(choice => question.choices.includes(choice));
+          
+          // Push new choices
+          questions[submition.last_question].answer.push(event.target.value);
+          answers[questions[submition.last_question].question._id].push(event.target.value);
+        } else {
+          event.target.parentNode.childNodes[0].classList.remove('selected-choice');
+          questions[submition.last_question].answer = questions[submition.last_question].answer.filter(choice => question.choices.includes(choice));
+          answers[questions[submition.last_question].question._id] = answers[questions[submition.last_question].question._id].filter(choice => question.choices.includes(choice));
+        }
+      } else {
+        return;
+      }
+
       saveAnswers(res => { return });
     }
   });
