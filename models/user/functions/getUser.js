@@ -21,6 +21,7 @@ module.exports = (user, callback) => {
     waiting_credit: user.waiting_credit,
     overall_credit: user.overall_credit,
     country: user.country,
-    on_waitlist: user.on_waitlist
+    on_waitlist: user.on_waitlist,
+    discord_id: user.discord_id
   });
 }
