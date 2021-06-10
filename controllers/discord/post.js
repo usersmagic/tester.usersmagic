@@ -25,7 +25,7 @@ module.exports = (req,res) => {
   client.on('data', data =>{
       const discord_id = decrypt(data);
       User.setDiscordID(req.session.user._id, discord_id, (err, user) =>{
-        if (!err) res.write(JSON.stringify({success: "false"}));
+        if (err) res.write(JSON.stringify({success: "false"}));
         else res.write(JSON.stringify({success: "true"}));
 
         return res.end();
