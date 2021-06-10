@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 
 const Project = require('../project/Project');
+const TargetUserList = require('../target_user_list/TargetUserList.js')
 
 const getFilters = require('./functions/getFilters');
 
@@ -14,38 +15,64 @@ const TargetSchema = new Schema({
     type: String,
     required: true
   },
+  status: {
+    // The status of the Project: [saved, waiting, approved, rejected]
+    type: String,
+    default: 'saved'
+  },
+  error: {
+    // Error about the target, if there is any
+    type: String,
+    default: null,
+    maxlength: 1000
+  },
+  created_at: {
+    // UNIX date for the creation time of the object
+    type: Date,
+    default: Date.now()
+  },
+  name: {
+    // Name of the Target group
+    type: String,
+    required: true,
+    maxlength: 1000
+  },
+  description: {
+    // Description of the Target group
+    type: String,
+    required: true,
+    maxlength: 1000
+  },
   country: {
     // The country of the testers
     type: String,
-    required: true
+    required: true,
+    length: 2
   },
-  filter: {
+  filters: {
     // The filters that are used to find testers
     type: Array,
     required: true
   },
   submition_limit: {
     // The number of submitions that are allowed, if it is 0 no new user can join the project
+    // Starts from 0, when the company tries to send the target to new users it increases
     type: Number,
     default: 0
   },
-  users_list: {
-    // List of ids from User model. The users in this list can join this target group
-    type: Array,
-    default: []
-  },
-  joined_users_list: {
-    // List of ids from User model. The users in this list have already joined the project, they cannot join one more time
-    type: Array,
-    default: []
+  approved_submition_count: {
+    // The number of approved Submitions under this Target
+    type: Number,
+    default: 0
   },
   price: {
+    // The price that will be paid to each user
     type: Number,
     default: null
   },
-  time_limit: {
+  last_update: {
     type: Number,
-    default: null
+    default: 0
   }
 });
 
@@ -57,26 +84,25 @@ TargetSchema.statics.getProjectsUserCanJoin = function (user_id, callback) {
 
   const Target = this;
 
-  Target.find({$and: [
-    {status: 'approved'},
-    {users_list: user_id.toString()},
-    {joined_users_list: {$ne: user_id.toString()}},
-    {submition_limit: {$gt: 0}}
-  ]}, (err, targets) => {
+  TargetUserList.checkTargetsUserCanJoin(user_id, (err, target_ids) => {
     if (err) return callback(err);
 
     async.timesSeries(
-      targets.length,
+      target_ids.length,
       (time, next) => {
-        Project.findProjectById(targets[time].project_id, (err, project) => {
-          if (err) return next('database_error');
+        Target.findById(mongoose.Types.ObjectId(target_ids[time].toString()), (err, target) => {
+          if (err || !target) return next('unknown_error');
 
-          project._id = targets[time]._id.toString(); // The user will join the Target with its id, not the project id
-          project.price = targets[time].price;
-          project.country = targets[time].country; // The country the user will be paid for
-          project.time_limit = targets[time].time_limit;
-
-          return next(null, project);
+          Project.findProjectById(target.project_id, (err, project) => {
+            if (err) return next('database_error');
+  
+            project._id = target._id.toString(); // The user will join the Target with its id, not the project id
+            project.price = target.price;
+            project.country = target.country; // The country the user will be paid for
+            project.time_limit = target.time_limit;
+  
+            return next(null, project);
+          });
         });
       },
       (err, projects) => {
@@ -109,53 +135,102 @@ TargetSchema.statics.getFiltersForUser = function (id, callback) {
   });
 };
 
+TargetSchema.statics.decSubmitionLimitByOne = function (id, callback) {
+  // Find the Target with the given id and decrease its submition limit by one
+  // Return an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()))
+    return callback(id);
+
+  const Target = this;
+
+  Target.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$inc: {
+    submiton_limit: -1
+  }}, {new: true}, (err, target) => {
+    if (err) return callback('database_error');
+    if (!target) return callback('document_not_found');
+
+    TargetUserList.updateEachTargetUserListSubmitionLimit(id, target.submition_limit, err => {
+      if (err) return callback(err);
+
+      callback(null);
+    });
+  });
+};
+
+TargetSchema.statics.incSubmitionLimitByOne = function (id, callback) {
+  // Find the Target with the given id and decrease its submition limit by one
+  // Return an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()))
+    return callback(id);
+
+  const Target = this;
+
+  Target.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$inc: {
+    submiton_limit: 1
+  }}, {new: true}, (err, target) => {
+    if (err) return callback('database_error');
+    if (!target) return callback('document_not_found');
+
+    TargetUserList.updateEachTargetUserListSubmitionLimit(id, target.submition_limit, err => {
+      if (err) return callback(err);
+
+      callback(null);
+    });
+  });
+};
+
 TargetSchema.statics.leaveTarget = function (id, user_id, callback) {
-  // Pulls the user_id from joined_users_list, pushes it from users_list and increase submition_limit by one. Returns the target object
-  // If it cannot, returns an error
+  // Find the Target with the given id. Push user to valid user_list of the latest TargetUserList. Remove user from any other TargetUserList
+  // Return an error if it exists
 
   if (!id || !validator.isMongoId(id.toString()) || !user_id || !validator.isMongoId(user_id.toString()))
     return callback('bad_request');
 
   const Target = this;
 
-  Target.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {
-    $push: { users_list: user_id.toString() },
-    $pull: { joined_users_list: user_id.toString() },
-    $inc: { submition_limit: 1 }
-  }, {}, (err, target) => {
-    if (err || !target) return callback('document_not_found');
+  Target.incSubmitionLimitByOne(id, err => {
+    if (err) return callback(err);
 
-    return callback(null, target);
+    TargetUserList.removeUser(user_id, id, err => {
+      if (err) return callback(err);
+
+      TargetUserList.addUserToValid(user_id, id, err => callback(err));
+    });
   });
 };
 
 TargetSchema.statics.joinTarget = function (id, user_id, callback) {
   // Check if the given user_id can join the Target with the given id
-  // If it can, adds it to joined_users_list, deletes it from users_list and decrease submition_limit by one. Returns the target object
-  // If it cannot, returns an error
+  // If it can, push user to answered user_list of the latest TargetUserList, remove user from any other TargetUserList. Return the Target
+  // If it cannot, return an error
 
   if (!id || !validator.isMongoId(id.toString()) || !user_id || !validator.isMongoId(user_id.toString()))
     return callback('bad_request');
 
   const Target = this;
 
-  Target.findOne({$and: [
-    {_id: mongoose.Types.ObjectId(id.toString())},
-    {users_list: user_id.toString()},
-    {joined_users_list: {$ne: user_id.toString()}},
-    {submition_limit: {$gt: 0}}
-  ]}, (err, target) => {
+  Target.findById(mongoose.Types.ObjectId(id.toString()), (err, target) => {
     if (err || !target) return callback('document_not_found');
+    if (target.submition_limit <= 0) return callback('bad_request');
 
-    Target.findByIdAndUpdate(mongoose.Types.ObjectId(target._id.toString()), {
-      $pull: { users_list: user_id.toString() },
-      $push: { joined_users_list: user_id.toString() },
-      $inc: { submition_limit: -1 }
-    }, {}, (err, target) => {
-      console.log(err, target);
-      if (err) return callback(err);
+    TargetUserList.checkIfUserCanJoin(user_id, id, res => {
+      if (!res) return callback('bad_request');
 
-      return callback(null, target);
+      Target.decSubmitionLimitByOne(id, err => {
+        if (err) return callback(err);
+
+        TargetUserList.removeUser(user_id, id, err => {
+          if (err) return callback(err);
+
+          TargetUserList.addUserToAnswered(user_id, id, err => {
+            if (err) return callback(err);
+
+            return callback(null, target);
+          });
+        });
+      });
     });
   });
 };

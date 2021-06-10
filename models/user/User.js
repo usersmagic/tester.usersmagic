@@ -715,18 +715,12 @@ UserSchema.statics.joinTarget = function (target_id, user_id, callback) {
   User.findById(mongoose.Types.ObjectId(user_id.toString()), (err, user) => {
     if (err || !user) return callback('document_not_found');
 
-    Target.findOne({$and: [
-      {_id: mongoose.Types.ObjectId(target_id.toString())},
-      {status: 'approved'},
-      {users_list: user_id.toString()},
-      {joined_users_list: {$ne: user_id.toString()}},
-      {submition_limit: {$gt: 0}}
-    ]}, (err, target) => {
-      if (err || !target) return callback('document_not_found');
+    Target.joinTarget(target_id, user_id, (err, target) => {
+      if (err) return callback(err);
 
       Project.findProjectById(target.project_id, (err, project) => {
         if (err || !project) return callback('document_not_found');
-
+  
         Submition.createSubmition({
           campaign_id: project._id,
           target_id: target._id,
@@ -736,24 +730,7 @@ UserSchema.statics.joinTarget = function (target_id, user_id, callback) {
         }, (err, submition) => {
           if (err) return callback('database_error');
     
-          Target.findByIdAndUpdate(mongoose.Types.ObjectId(target_id.toString()), {
-            $pull: {
-              users_list: user_id.toString()
-            },
-            $push: {
-              joined_users_list: user_id.toString()
-            },
-            $inc: {
-              submition_limit: -1
-            }
-          }, err => {
-            if (err) return callback('database_error');
-
-            Target.collection
-              .createIndex({ users_list: 1 })
-              .then(() => callback(null, submition._id.toString()))
-              .catch(err => callbakc('indexing_error'));
-          });
+          return callback(null, submition._id.toString());
         });
       });
     });
