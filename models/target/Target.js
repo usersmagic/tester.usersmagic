@@ -139,16 +139,22 @@ TargetSchema.statics.decSubmitionLimitByOne = function (id, callback) {
   // Find the Target with the given id and decrease its submition limit by one
   // Return an error if it exists
 
+  console.log(id);
+
   if (!id || !validator.isMongoId(id.toString()))
-    return callback(id);
+    return callback('bad_request');
+
+  console.log("here");
 
   const Target = this;
 
   Target.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$inc: {
-    submiton_limit: -1
+    submition_limit: -1
   }}, {new: true}, (err, target) => {
     if (err) return callback('database_error');
     if (!target) return callback('document_not_found');
+
+    console.log("here");
 
     TargetUserList.updateEachTargetUserListSubmitionLimit(id, target.submition_limit, err => {
       if (err) return callback(err);
@@ -168,7 +174,7 @@ TargetSchema.statics.incSubmitionLimitByOne = function (id, callback) {
   const Target = this;
 
   Target.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$inc: {
-    submiton_limit: 1
+    submition_limit: 1
   }}, {new: true}, (err, target) => {
     if (err) return callback('database_error');
     if (!target) return callback('document_not_found');
@@ -264,6 +270,26 @@ TargetSchema.statics.findByFields = function (fields, options, callback) {
     if (err) return callback(err);
 
     return callback(null, targets);
+  });
+};
+
+TargetSchema.statics.getProjectNameFromTargetId = function (id, callback) {
+  // Find the Project of the Target with the given id
+  // Return its name or an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()))
+    return callback('bad_request');
+  
+  const Target = this;
+
+  Target.findById(mongoose.Types.ObjectId(id.toString()), (err, target) => {
+    if (err || !target) return callback('document_not_found');
+
+    Project.findProjectById(target.project_id, (err, project) => {
+      if (err) return callback(err);
+
+      return callback(null, project.name.toString());
+    });
   });
 };
 
