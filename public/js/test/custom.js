@@ -44,6 +44,9 @@ function createProgressBar(index) {
   questionProgressBar.classList.add('question-progress-bar');
   questionWrapper.appendChild(questionProgressBar);
 
+  if (filtersEnded)
+    index += filters.length;
+
   const questionProgressBarInnerLine = document.createElement('div');
   questionProgressBarInnerLine.classList.add('question-progress-bar-inner-line');
   questionProgressBarInnerLine.style.width = ((index * questionProgressBar.offsetWidth) / ((filters.length+questions.length-1))) + 'px';
@@ -88,8 +91,11 @@ function createOtherOptionInput(wrapper, type, value) {
 }
 
 function createQuestion(question, answer, index) {
+  document.querySelector('.country-question-wrapper').style.display = document.querySelector('.gender-question-wrapper').style.display = document.querySelector('.birth-year-question-wrapper').style.display = 'none';
+  
   if (filtersEnded) {
     const questionWrapper = document.querySelector('.question-wrapper');
+    questionWrapper.style.display = 'flex';
     questionWrapper.innerHTML = '';
     createProgressBar(index);
   
@@ -247,6 +253,8 @@ function createQuestion(question, answer, index) {
   } else {
     const questionWrapper = document.querySelector('.question-wrapper');
     questionWrapper.innerHTML = '';
+
+    createProgressBar(index);
   
     if (question.type == 'special') {
       questionWrapper.style.display = 'none';
@@ -260,8 +268,6 @@ function createQuestion(question, answer, index) {
       }
     } else {
       questionWrapper.style.display = 'flex';
-  
-      createProgressBar(index);
   
       const questionInfoWrapper = document.createElement('div');
       questionInfoWrapper.classList.add('question-info-wrapper');
@@ -508,6 +514,9 @@ function createAllWrapperContent() {
 
   if (filtersEnded) {
     let last_question = submition.last_question;
+
+    if (last_question > 0)
+      document.querySelector('.back-button').style.cursor = 'pointer';
 
     const questionOuterWrapper = document.querySelector('.question-outer-wrapper');
     const finishPageOuterWrapper = document.querySelector('.finish-page-outer-wrapper');
@@ -925,12 +934,14 @@ window.onload = () => {
 
         saveAnswers(res => {
           if (res) {
-            if (filterIndex == filters.length-1)
+            if (filterIndex == filters.length-1) {
+              filtersEnded = true;
               return validateFiltersAndCreateSubmition();
+            }
             filterIndex++;
             createAllWrapperContent();
           }
-          });
+        });
       }
 
       // Back button is clicked
