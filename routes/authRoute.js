@@ -13,6 +13,7 @@ const confirmGetController = require('../controllers/auth/confirm/get');
 const changePasswordGetController = require('../controllers/auth/change_password/get');
 const emailErrorGetController = require('../controllers/auth/email_error/get');
 const lostPasswordGetController = require('../controllers/auth/lost_password/get');
+const sessionGetController = require('../controllers/auth/session/get');
 const userGetController = require('../controllers/auth/user/get');
 
 const loginPostController = require('../controllers/auth/login/post');
@@ -21,6 +22,7 @@ const closePostController = require('../controllers/auth/close/post');
 const completePostController = require('../controllers/auth/complete/post');
 const lostPasswordPostController = require('../controllers/auth/lost_password/post');
 const changePasswordPostController = require('../controllers/auth/change_password/post');
+const temporaryPostController = require('../controllers/auth/temporary/post');
 
 router.get(
   '/login',
@@ -64,6 +66,11 @@ router.get(
     lostPasswordGetController
 );
 router.get(
+  '/session',
+    isLoggedIn,
+    sessionGetController
+);
+router.get(
   '/user',
     userGetController
 );
@@ -93,6 +100,10 @@ router.post(
 router.post(
   '/change_password',
     changePasswordPostController
+);
+router.post(
+  '/temporary',
+    temporaryPostController
 );
 
 module.exports = router;
