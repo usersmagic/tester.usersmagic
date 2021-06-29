@@ -76,6 +76,22 @@ const TargetSchema = new Schema({
   }
 });
 
+TargetSchema.statics.findTargetById = function (id, callback) {
+  // Find the Target with the given id and return, or an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()))
+    return callback('bad_request');
+
+  const Target = this;
+
+  Target.findById(mongoose.Types.ObjectId(id.toString()), (err, target) => {
+    if (err) return callback('database_error');
+    if (!target) return callback('document_not_found');
+
+    return callback(null, target);
+  });
+};
+
 TargetSchema.statics.getProjectsUserCanJoin = function (user_id, callback) {
   // Find Targets that the user with the given id can join, find and return their projects or an error if there is an error
 
@@ -125,7 +141,7 @@ TargetSchema.statics.getFiltersForUser = function (id, callback) {
   Target.findById(mongoose.Types.ObjectId(id.toString()), (err, target) => {
     if (err) return callback(err);
 
-    getFilters(target.filter, (err, filters) => {
+    getFilters(target.filters, (err, filters) => {
       if (err) return callback(err);
 
       filters['$and'].push({country: target.country});
@@ -139,12 +155,8 @@ TargetSchema.statics.decSubmitionLimitByOne = function (id, callback) {
   // Find the Target with the given id and decrease its submition limit by one
   // Return an error if it exists
 
-  console.log(id);
-
   if (!id || !validator.isMongoId(id.toString()))
     return callback('bad_request');
-
-  console.log("here");
 
   const Target = this;
 
@@ -153,8 +165,6 @@ TargetSchema.statics.decSubmitionLimitByOne = function (id, callback) {
   }}, {new: true}, (err, target) => {
     if (err) return callback('database_error');
     if (!target) return callback('document_not_found');
-
-    console.log("here");
 
     TargetUserList.updateEachTargetUserListSubmitionLimit(id, target.submition_limit, err => {
       if (err) return callback(err);
@@ -273,7 +283,7 @@ TargetSchema.statics.findByFields = function (fields, options, callback) {
   });
 };
 
-TargetSchema.statics.getProjectNameFromTargetId = function (id, callback) {
+TargetSchema.statics.getProjectFromTargetId = function (id, callback) {
   // Find the Project of the Target with the given id
   // Return its name or an error if it exists
 
@@ -288,7 +298,7 @@ TargetSchema.statics.getProjectNameFromTargetId = function (id, callback) {
     Project.findProjectById(target.project_id, (err, project) => {
       if (err) return callback(err);
 
-      return callback(null, project.name.toString());
+      return callback(null, project);
     });
   });
 };

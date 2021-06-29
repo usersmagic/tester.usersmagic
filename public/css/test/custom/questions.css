@@ -8,90 +8,103 @@
   overflow: hidden;
 }
 
-.start-page-wrapper {
-  width: 350px;
-  height: fit-content;
-  min-height: fit-content;
-}
-.email-page-one-wrapper, .email-page-two-wrapper, .validate-password-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.email-page-one-wrapper button, .email-page-two-wrapper button {
-  margin-top: 0px !important;
-}
-.email-title {
-  font-weight: 600;
-  color: rgb(78, 75, 102);
-  font-size: 18px;
-  line-height: 50px;
-}
-.email-info {
-  font-weight: 500;
-  color: rgba(78, 75, 102, 0.7);
-  font-size: 14px;
-  line-height: 20px;
-  margin-bottom: 20px;
-}
-.lost-password-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-.lost-password-link {
-  color: rgb(46, 197, 206);
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 75%;
-}
-.lost-password-link:hover {
-  text-decoration: underline;
-}
-
-.email-error {
-  font-weight: 600;
-  font-size: 14px;
-  color: rgb(200, 0, 0);
-  width: 100%;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-}
-
-.finish-submition-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-}
-.finish-submition-title {
-  font-weight: 600;
-  color: rgb(78, 75, 102);
-  font-size: 18px;
-  line-height: 50px;
-}
-.finish-submition-text {
-  font-weight: 500;
-  color: rgba(78, 75, 102, 0.7);
-  font-size: 14px;
-  line-height: 20px;
-}
-.finish-submition-wrapper a {
-  max-width: 300px;
-}
-
-.question-outer-wrapper {
+.welcome-page-outer-wrapper, .question-outer-wrapper, .finish-page-outer-wrapper {
   height: 100vh;
   width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.welcome-page-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.welcome-campaign-name {
+  color: rgb(78, 75, 102);
+  font-weight: 400;
+  font-size: 16px;
+  margin-bottom: 20px;
+  max-width: 500px;
+  letter-spacing: 0.75px;
+  text-align: center;
+}
+.welcome-title {
+  width: 400px;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgb(20, 20, 43);
+  margin-bottom: 35px;
+  text-align: center;
+  line-height: 50px;
+}
+.welcome-steps-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.welcome-step-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.welcome-step-number {
+  width: 24px;
+  height: 24px;
+  background-color: rgb(46, 197, 206);
+  font-weight: 600;
+  font-size: 16px;
+  color: rgb(254, 254, 254);
+  letter-spacing: 0.75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  margin-right: 10px;
+}
+.welcome-step-text {
+  font-weight: 400;
+  font-size: 16px;
+  font-weight: 300;
+  color: rgb(78, 75, 102);
+  letter-spacing: 0.75px;
+}
+.welcome-button-wrapper {
+  width: 250px;
+}
+.welcome-campaign-instructions {
+  color: rgb(78, 75, 102);
+  font-weight: 400;
+  font-size: 18px;
+  margin-bottom: 10px;
+  max-width: 500px;
+  letter-spacing: 0.75px;
+  text-align: center;
+}
+.welcome-campaign-instructions-opening {
+  color: rgb(78, 75, 102);
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 10px;
+  max-width: 500px;
+  letter-spacing: 0.75px;
+  text-align: center;
+}
+.welcome-campaign-instructions-image {
+  max-width: 300px;
+  max-height: 200px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.welcome-campaign-instructions-image img {
+  max-width: 300px;
+  height: auto;
 }
 
 .back-button, .next-button {
@@ -109,17 +122,16 @@
   font-size: 18px;
 }
 
-.question-wrapper, .country-question-wrapper, .gender-question-wrapper, .birth-year-question-wrapper {
+.question-wrapper {
   width: 400px;
   min-width: 400px;
-  height: 100%;
-  min-height: 100%;
+  height: fit-content;
+  max-height: 100%;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
   margin: 0px 50px;
 }
 
@@ -160,6 +172,75 @@
   color: rgb(78, 75, 102);
   font-size: 18px;
   margin-bottom: 30px;
+}
+
+.each-question-yesno-buttons-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.each-question-no-button, .each-question-yes-button {
+  border: 1px solid rgb(196, 196, 196);
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  cursor: pointer;
+}
+.each-question-no-button {
+  margin-right: 5px;
+}
+.selected-no-button {
+  border: 2px solid rgba(255, 0, 0, 0.5) !important;
+  width: 198px !important;
+  height: 198px !important;
+}
+.selected-yes-button {
+  border: 2px solid rgba(46, 197, 206, 0.7) !important;
+  width: 198px !important;
+  height: 198px !important;
+}
+.each-question-yes-button {
+  margin-left: 5px;
+}
+.each-question-no-button i {
+  font-size: 14px;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 0, 0, 0.3);
+  color: rgba(255, 0, 0, 0.6);
+  margin-bottom: 20px;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.each-question-no-button span {
+  font-size: 18px;
+  color: rgba(78, 75, 102, 1);
+  font-weight: 600;
+}
+.each-question-yes-button i {
+  font-size: 14px;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(46, 197, 206, 0.3);
+  color: rgba(46, 197, 206, 1);
+  margin-bottom: 20px;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.each-question-yes-button span {
+  font-size: 18px;
+  color: rgba(78, 75, 102, 1);
+  font-weight: 600;
 }
 
 .each-question-choice {
@@ -220,28 +301,6 @@
 .checked-choice-icon {
   color: rgb(254, 254, 254);
   font-size: 10px;
-}
-.each-question-other-option-input-wrapper {
-  height: 55px;
-  min-height: 55px;
-  width: 100%;
-  padding: 0px 22px;
-  border: 1px solid rgba(151, 151, 151, 0.3);
-  border-radius: 5px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.each-question-other-option-input-wrapper input {
-  width: 100%;
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: rgb(78, 75, 102);
-  font-size: 12px;
-  font-weight: 600;
 }
 
 .each-question-opinion-outer-wrapper {
