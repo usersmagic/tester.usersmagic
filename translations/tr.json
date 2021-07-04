@@ -231,5 +231,8 @@
 	"Please write a 6 digits long password and confirm": "Lütfen en az 6 haneli bir şifre oluşturun ve tekrarlayın",
 	"Your request for changing your password has passed 1 hour. Please make a new request.": "Şifrenizi değiştirme talebiniz 1 saati geçti. Lütfen yeni bir talepte bulunun.",
 	"": "",
-	"An unknown error occured, please refresh the page and try again": "An unknown error occured, please refresh the page and try again"
+	"An unknown error occured, please refresh the page and try again": "Bilinmeyen bir hata oluştu, lütfen sayfayı yenileyin ve tekrar deneyin",
+	"Please confirm your email": "Lütfen e-postanızı onaylayın",
+	"Your confirmation does not match. Please retry": "E-posta onayınız eşleşmiyor, lütfen tekrar deneyin",
+	"Your password is wrong, please try again": "Şifreniz yanlış, lütfen tekrar deneyin"
 }

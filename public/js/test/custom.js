@@ -667,6 +667,8 @@ window.onload = () => {
 
   const emailPageOneWrapper = document.querySelector('.email-page-one-wrapper');
   const emailPageTwoWrapper = document.querySelector('.email-page-two-wrapper');
+  const agreementWrapper = document.querySelector('.agreement-wrapper');
+  const agreementCheckboxWrapper = document.querySelector('.agreement-checkbox-wrapper');
   const validatePasswordWrapper = document.querySelector('.validate-password-wrapper');
   const pageOneEmailError = document.querySelector('.page-one-email-error');
   const pageTwoEmailError = document.querySelector('.page-two-email-error');
@@ -677,6 +679,7 @@ window.onload = () => {
   const wrongConfirmEmailError = document.getElementById('wrong-confirm-email-error').innerHTML;
   const writePasswordError = document.getElementById('write-password-error').innerHTML;
   const wrongPasswordError = document.getElementById('wrong-password-error').innerHTML;
+  const agreementError = document.getElementById('agreement-error').innerHTML;
 
   emailPageOneWrapper.onsubmit = event => {
     event.preventDefault();
@@ -709,6 +712,9 @@ window.onload = () => {
       pageOneEmailError.innerHTML = wrongConfirmEmailError;
       return;
     }
+
+    if (!agreementWrapper.childNodes[0].checked)
+      return pageTwoEmailError.innerHTML = agreementError;
 
     validateUserAndUpdateFilters();
   }
@@ -918,6 +924,19 @@ window.onload = () => {
           document.querySelector('.next-button').style.cursor = 'pointer';
       }
     } else {
+      // Agreement checkbox is clicked
+      if (event.target.classList.contains('agreement-wrapper') || event.target.parentNode.classList.contains('agreement-wrapper') || event.target.parentNode.parentNode.classList.contains('agreement-wrapper')) {
+        if (agreementWrapper.childNodes[0].checked) {
+          agreementWrapper.childNodes[0].checked = false;
+          agreementCheckboxWrapper.style.backgroundColor = 'rgb(254, 254, 254)';
+          agreementCheckboxWrapper.style.borderColor = 'rgba(151, 151, 151, 0.3)';
+        } else {
+          agreementWrapper.childNodes[0].checked = true;
+          agreementCheckboxWrapper.style.backgroundColor = 'rgb(46, 197, 206)';
+          agreementCheckboxWrapper.style.borderColor = 'transparent';
+        }
+      }
+
       // Next button is clicked
       if (event.target.classList.contains('next-button') || event.target.parentNode.classList.contains('next-button')) {
         if (filterIndex > filters.length - 1)
