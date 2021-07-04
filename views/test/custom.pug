@@ -3,11 +3,12 @@ block content
   input.display-none#target-id(type="text" value=target_id.toString())
   input.display-none#project(type="text" value=JSON.stringify(project))
   span.display-none#unknown-error= __('An unknown error occured, please refresh the page and try again')
-  span.display-none#write-email-error Please write your email
-  span.display-none#confirm-email-error Please confirm your email
-  span.display-none#wrong-confirm-email-error Your confirmation does not match. Please retry
-  span.display-none#write-password-error Please write your password
-  span.display-none#wrong-password-error Your password is wrong, please try again
+  span.display-none#write-email-error= __('Please write your email')
+  span.display-none#confirm-email-error= __('Please confirm your email')
+  span.display-none#wrong-confirm-email-error= __('Your confirmation does not match. Please retry')
+  span.display-none#write-password-error= __('Please write your password')
+  span.display-none#wrong-password-error= __('Your password is wrong, please try again')
+  span.display-none#agreement-error= __('Please accept the User Agreement and Privacy Statement')
   span.short-text-type.display-none= __('short_text')
   span.long-text-type.display-none= __('short_text')
   span.range-type.display-none= __('range')
@@ -40,6 +41,16 @@ block content
         span.email-title Please rewrite your email
         span.email-info We need you to confirm your email, just to make sure :)
         input.general-input-with-border#confirm-email-input(type="email" placeholder="Confirm E-mail" autocomplete="none")
+        .agreement-wrapper
+          input.display-none#approve-agrement-input(type="checkbox")
+          .agreement-checkbox-wrapper
+            i.fas.fa-check
+          span
+            span.agreement-text #{__('By clicking the box, you accept')}
+            a.agreement-link(href="/agreement/user")  #{__('User Agreement')}
+            span.agreement-text  #{__('and')}
+            a.agreement-link(href="/agreement/privacy")  #{__('Privacy Statement')}
+            span.agreement-text  #{__('for using Usersmagic and give your permission for protection and usage of your informations.')}
         button.general-seablue-button
           span Confirm
         span.email-error.page-two-email-error

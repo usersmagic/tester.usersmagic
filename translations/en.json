@@ -230,5 +230,9 @@
 	"We send an email to you with the instructions to reset your password. Please check your email.": "We send an email to you with the instructions to reset your password. Please check your email.",
 	"Change Password": "Change Password",
 	"Please write a 6 digits long password and confirm": "Please write a 6 digits long password and confirm",
-	"Your request for changing your password has passed 1 hour. Please make a new request.": "Your request for changing your password has passed 1 hour. Please make a new request."
+	"Your request for changing your password has passed 1 hour. Please make a new request.": "Your request for changing your password has passed 1 hour. Please make a new request.",
+	"An unknown error occured, please refresh the page and try again": "An unknown error occured, please refresh the page and try again",
+	"Please confirm your email": "Please confirm your email",
+	"Your confirmation does not match. Please retry": "Your confirmation does not match. Please retry",
+	"Your password is wrong, please try again": "Your password is wrong, please try again"
 }
