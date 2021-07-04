@@ -16,6 +16,58 @@ const verifyPassword = require('./functions/verifyPassword');
 
 const Schema = mongoose.Schema;
 
+const allowedGenderValues = ['male', 'female', 'other', 'not_specified'];
+
+const getFilter = filter => {
+  // Takes an object, returns its mongodb search query version recursively
+
+  if (typeof filter != 'object')
+    return filter;
+
+  if (Array.isArray(filter)) {
+    for (let i = 0; i < filter.length; i++)
+      filter[i] = getFilter(filter[i]);
+    return filter;
+  } else {
+    const key = Object.keys(filter)[0];
+    const value = Object.values(filter)[0];
+  
+    if (key == 'and' || key == 'or' || key == 'eq' || key == 'gt' || key == 'gte' || key == 'in' || key == 'lt' || key == 'lte' || key == 'ne' || key == 'nin' || key == 'not') {
+      if (Array.isArray(value)) {
+        const filters = [];
+        for (let i = 0; i < value.length; i++) {
+          filters.push(getFilter(value[i]));
+        }
+        const returnValue = {
+          [`$${key}`]: filters
+        };
+        return returnValue;
+      } else {
+        const returnValue = {
+          [`$${key}`]: getFilter(value)
+        };
+        return returnValue;
+      }
+    } else {
+      if (Array.isArray(value)) {
+        const filters = [];
+        for (let i = 0; i < value.length; i++) {
+          filters.push(getFilter(value[i]));
+        }
+        const returnValue = {
+          [`${key}`]: filters
+        };
+        return returnValue;
+      } else {
+        const returnValue = {
+          [`${key}`]: getFilter(value)
+        };
+        return returnValue;
+      }
+    }
+  }
+};
+
 const UserSchema = new Schema({
   priority_index: {
     // A number describing User's priority while joining new campaigns
@@ -45,9 +97,14 @@ const UserSchema = new Schema({
   password: {
     // Password of the user, saved hashed
     type: String,
-    required: true,
+    required: false,
+    default: null,
     minlength: 6,
     maxlength: 1000
+  },
+  is_temporary: {
+    type: Boolean,
+    default: false
   },
   agreement_approved: {
     // If user approved user agreement
@@ -74,7 +131,7 @@ const UserSchema = new Schema({
     // A random generated code when the user is created. Secure and never sended to client side
     type: String,
     length: 20,
-    required: true
+    default: null
   },
   country: {
     // Country of the user, required while completing account
@@ -239,6 +296,27 @@ UserSchema.statics.findUser = function (email, password, callback) {
   });
 };
 
+UserSchema.statics.findTemporaryUser = function (email, callback) {
+  // Find the User with the given email
+  // Return an error if it is not temporary
+  // If it is, return the user
+
+  if (!email || !validator.isEmail(email.toString()))
+    return callback('bad_request');
+
+  const User = this;
+
+  User.findOne({ email }, (err, user) => {
+    if (err) return callback('database_error');
+    if (!user) return callback('document_not_found');
+
+    if (!user.is_temporary || (user.password && user.password.length))
+      return callback('not_authenticated_request');
+
+    return callback(null, user);
+  });
+};
+
 UserSchema.statics.updateLastLoginTime = function (id, callback) {
   // Find the User with the given id and update its last_login_time if it is before 5 mins
   // Return an error if it exists
@@ -263,19 +341,7 @@ UserSchema.statics.updateLastLoginTime = function (id, callback) {
     }}, err => {
       if (err) return callback('database_error');
 
-      User.collection
-        .createIndex({
-          on_waitlist: 1,
-          gender: 1,
-          birth_year: 1,
-          country: 1,
-          city: 1,
-          town: 1,
-          information: 1,
-          priority_index: 1
-        })
-        .then(() => callback(null))
-        .catch(err => callback('indexing_error'));
+      return callback(null);
     });
   });
 };
@@ -309,6 +375,133 @@ UserSchema.statics.createUser = function (data, callback) {
     return callback('password_length');
 
   const User = this;
+
+  User.findOne({
+    email: data.email.trim()
+  }, (err, user) => {
+    if (err) return callback('database_error');
+
+    if (user) {
+      if (!user.is_temporary)
+        return callback('email_duplication');
+
+      user.is_temporary = false;
+      user.confirm_code = Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10);
+      user.password = data.password;
+      user.invitor = data.code && validator.isMongoId(data.code.toString()) ? data.code.toString() : null;
+      user.agreement_approved = true;
+      user.on_waitlist = true;
+
+      user.save((err, user) => {
+        if (err) return callback('database_error');
+
+        User.collection
+          .createIndex({
+            email: -1
+          })
+          .then(() => {
+            getUser(user, (err, user) => {
+              if (err) return callback(err);
+        
+              return callback(null, user);
+            });
+          })
+          .catch(err => callback('indexing_error'));
+      });
+    } else {
+      const newUserData = {
+        confirm_code: Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10),
+        email: data.email,
+        password: data.password,
+        invitor: data.code && validator.isMongoId(data.code.toString()) ? data.code.toString() : null,
+        agreement_approved: true,
+        on_waitlist: true // Always true for a new user
+      };
+    
+      const newUser = new User(newUserData);
+    
+      newUser.save((err, user) => {
+        if (err && err.code == 11000) 
+          return callback('email_duplication');
+        if (err)
+          return callback('database_error');
+    
+        User.collection
+          .createIndex({
+            email: -1
+          })
+          .then(() => {
+            getUser(user, (err, user) => {
+              if (err) return callback(err);
+        
+              return callback(null, user);
+            });
+          })
+          .catch(err => callback('indexing_error'));
+      });
+    }
+  });
+};
+
+UserSchema.statics.createTemporaryUser = function (data, callback) {
+  // Create a temporary User, without a password
+  // Return the user or an error if it exists
+
+  if (!data || !data.email)
+    return callback('bad_request');
+  
+  data.email = data.email.toString().trim();
+
+  if (!validator.isEmail(data.email))
+    return callback('email_validation');
+
+  const User = this;
+
+  User.findOne({
+    email: data.email
+  }, (err, user) => {
+    if (err) return callback('database_error');
+    if (user) return callback('email_duplication');
+
+    const newUserData = {
+      email: data.email,
+      is_temporary: true,
+      on_waitlist: true // Always true for a new user
+    };
+  
+    const newUser = new User(newUserData);
+  
+    newUser.save((err, user) => {
+      if (err && err.code == 11000) 
+        return callback('email_duplication');
+      if (err)
+        return callback('database_error');
+  
+      User.collection
+        .createIndex({
+          email: -1
+        })
+        .then(() => callback(null, user))
+        .catch(err => callback('indexing_error'));
+    });
+  });
+};
+
+UserSchema.statics.getUserIdByEmail = function (email, callback) {
+  // Find and return the id of the User with the given email, or an error if it exists
+  
+  if (!email || !validator.isEmail(email.toString()))
+    return callback('bad_request');
+
+  const User = this;
+
+  User.findOne({
+    email: email.toString().trim()
+  }, (err, user) => {
+    if (err || !user)
+      return callback('document_not_found');
+
+    return callback(null, user._id.toString());
 
   const newUserData = {
     confirm_code: Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10),
@@ -351,7 +544,7 @@ UserSchema.statics.generateResetPasswordCode = function () {
   for (let i = 0; i < length; i++)
     str += (Math.floor(Math.random() * 10) + '0');
   return str;
-}
+};
 
 UserSchema.statics.updateResetPasswordCode = function (data, callback) {
   // Update the reset password code and time of the User with the given email on the data
@@ -478,8 +671,6 @@ UserSchema.statics.completeUser = function (id, data, callback) {
   // Update required fields of the user with given id, set completed field as true
   // Return an error if it exists
 
-  const allowedGenderValues = ['male', 'female', 'other', 'not_specified'];
-
   if (!data || typeof data != 'object' || !id || !validator.isMongoId(id.toString()))
     return callback('bad_request');
 
@@ -520,19 +711,7 @@ UserSchema.statics.completeUser = function (id, data, callback) {
         if (err) return callback('database_error');
         if (!user) return callback('document_not_found');
 
-        User.collection
-          .createIndex({
-            on_waitlist: 1,
-            gender: 1,
-            birth_year: 1,
-            country: 1,
-            city: 1,
-            town: 1,
-            information: 1,
-            priority_index: 1
-          })
-          .then(() => callback(null))
-          .catch(err => callback('indexing_error'));
+        return callback(null);
       });
     });
   });
@@ -850,6 +1029,7 @@ UserSchema.statics.getInReviewSubmitionsOfUser = function (user_id, callback) {
 
   Submition
     .find({
+      type: 'target',
       user_id: user_id.toString(),
       status: {$in: ['saved', 'waiting']}
     })
@@ -942,6 +1122,7 @@ UserSchema.statics.getCompletedSubmitionsOfUser = function (user_id, callback) {
 
   Submition
     .find({
+      type: 'target',
       user_id: user_id.toString(),
       status: {$in: ['approved', 'unapproved', 'timeout']}
     })
@@ -1012,28 +1193,6 @@ UserSchema.statics.getCompletedSubmitionsOfUser = function (user_id, callback) {
     });
 };
 
-UserSchema.statics.joinProjectFromCustomURL = function (project_id, callback) {
-  // Join the project with the given project_id from a custom account
-  // Return the id of the Submition that is created or an error if it exists
-
-  if (!project_id || !validator.isMongoId(project_id.toString()))
-    return callback('bad_request');
-
-  Project.findById(mongoose.Types.ObjectId(project_id.toString()), (err, project) => {
-    if (err || !project)
-      return callback('document_not_found');
-
-    Submition.createURLSubmition({
-      campaign_id: project_id,
-      question_number: project.questions.length
-    }, (err, submition) => {
-      if (err) return callback(err);
-
-      return callback(null, submition._id.toString());
-    });
-  });
-};
-
 UserSchema.statics.getSubmitionByIdOfCustomURL = function (submition_id, campaign_id, callback) {
   // Get the Submition with the given submition_id, match it with its project.
   // Return an object with campaign, submition and questions field, or an error if it exists
@@ -1075,6 +1234,194 @@ UserSchema.statics.getSubmitionByIdOfCustomURL = function (submition_id, campaig
             });
           }
         );
+    });
+  });
+};
+
+UserSchema.statics.getFiltersBeforeCustomSubmition = function (id, target_id, callback) {
+  // Get a list of filters required for the User with given id before the target is joint
+  // Return an array of questions, or an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()) || !target_id)
+    return callback('bad_request');
+
+  const User = this;
+
+  User.findById(mongoose.Types.ObjectId(id.toString()), (err, user) => {
+    if (err || !user) return callback('document_not_found');
+
+    Target.findTargetById(target_id, (err, target) => {
+      if (err) return callback(err);
+
+      target.filters.push({ country: target.country });
+
+      async.timesSeries(
+        target.filters.length,
+        (time, next) => {
+          const filterKey = Object.keys(target.filters[time])[0] == 'and' ? '$and' : Object.keys(target.filters[time])[0];
+          const filterName = filterKey == '$and' ? 'age' : filterKey;
+          const filterValue = Object.values(target.filters[time])[0];
+          
+          User.findOne({$and: [
+            { _id: mongoose.Types.ObjectId(id.toString()) },
+            { [filterKey]: getFilter(filterValue) }
+          ]}, (err, user) => {
+            if (err) return next('database_error');
+
+            if (user) return next(null);
+
+            if (filterName == 'age' || filterName == 'country' || filterName == 'gender' || filterName == 'town' || filterName == 'city')
+              return next(null, {
+                _id: filterName,
+                type: 'special'
+              });
+
+            const filterId = filterName.split('.')[1];
+
+            Question.findQuestionById(filterId, (err, question) => {
+              if (err) return next(err);
+
+              return next(null, question);
+            });
+          });
+        },
+        (err, questions) => {
+          if (err) return callback(err);
+          questions = questions.filter(question => question && question._id);
+
+          return callback(null, questions);
+        }
+      );
+    });
+  });
+};
+
+UserSchema.statics.saveFilter = function (id, data, callback) {
+  // Save the filter under the User with the given id
+  // Return an error if it exists
+
+  if (!id || !data || !data.id || !data.answer)
+    return callback('bad_request');
+
+  const User = this;
+
+  User.getUserById(id, (err, user) => {
+    if (err) return callback(err);
+    if (!user) return callback('document_not_found');
+
+    if (data.id == 'age') {
+      if (isNaN(parseInt(data.answer)) || parseInt(data.answer) < 1920 || parseInt(data.answer) > 2021)
+        return callback('bad_request');
+
+      data.answer = parseInt(data.answer);
+
+      User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
+        birth_year: parseInt(data.answer)
+      }}, err => {
+        if (err) return callback('database_error');
+
+        return callback(null);
+      });
+    } else if (data.id == 'country') {
+      Country.getCountryWithAlpha2Code(data.answer, (err, country) => {
+        if (err || !country) return callback('bad_request');
+
+        User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
+          country: data.answer.toString().trim()
+        }}, err => {
+          if (err) return callback('database_error');
+  
+          return callback(null);
+        });
+      });
+    } else if (data.id == 'gender') {
+      if (!allowedGenderValues.includes(data.answer.toString()))
+        return callback('bad_request');
+
+      User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
+        gender: data.answer.toString().trim()
+      }}, err => {
+        if (err) return callback('database_error');
+
+        return callback(null);
+      });
+    } else {
+      Question.findQuestionById(data.id, (err, question) => {
+        if (err) return callback(err);
+  
+        if ((question.type == 'checked' && !Array.isArray(data.answer)) || (question.type != 'checked' && typeof data.answer != 'string'))
+          return callback('bad_request');
+  
+        User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
+          [`information.${data.id.toString()}`]:  data.answer
+        }}, err => {
+          if (err) return callback('database_error');
+  
+          return callback(null);
+        });
+      });
+    }
+  });
+};
+
+UserSchema.statics.validateUserToJointarget = function (id, target_id, callback) {
+  // Validate if the given User can join the given Target
+  // Return true/false, or an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()) || !target_id)
+    return callback('bad_request');
+
+  const User = this;
+
+  Target.getFiltersForUser(target_id, (err, filters) => {
+    if (err) return callback(err);
+    if (!filters || !filters.$and)
+      return callback('unknown_error');
+
+    filters.$and.push({ _id: mongoose.Types.ObjectId(id.toString()) });
+
+    User.findOne(filters, (err, user) => {
+      if (err) return callback('database_error');
+
+      if (user)
+        return callback(null, true);
+      else
+        return callback(null, false);
+    });
+  });
+};
+
+UserSchema.statics.findOrCreateCustomSubmition = function (id, target_id, callback) {
+  // Find or create the custom submition of the User with the given id for the Target with the target_id
+  // Return the Submition, or an error if it exists
+
+  const User = this;
+
+  User.validateUserToJointarget(id, target_id, (err, res) => {
+    if (err || !res)
+      return callback('not_authenticated_request');
+
+    Submition.findSubmitionByTargetIdAndUserId({
+      user_id: id,
+      target_id
+    }, (err, submition) => {
+      if (err) return callback(err);
+
+      if (submition && submition.type == 'url')
+        return callback(null, submition);
+
+      Target.getProjectFromTargetId(target_id, (err, project) => {
+        Submition.createURLSubmition({
+          campaign_id: project._id.toString(),
+          target_id: target_id.toString(),
+          user_id: id.toString(),
+          question_number: project.questions.length
+        }, (err, submition) => {
+          if (err) return callback(err);
+
+          return callback(null, submition);
+        });
+      });
     });
   });
 };

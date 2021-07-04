@@ -7,6 +7,9 @@ module.exports = (req, res, next) => {
     if (err || !user)
       return res.status(401).redirect('/auth/login' + ((req.query && req.query.lang) ? '?lang=' + req.query.lang : ''));
     
+    if (user.is_temporary)
+      return res.redirect('/auth/login');
+
     if (!user.completed)
       return res.redirect('/auth/complete' + ((req.query && req.query.lang) ? '?lang=' + req.query.lang : ''));
 

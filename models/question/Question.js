@@ -66,4 +66,20 @@ const QuestionSchema = new Schema({
   }
 });
 
+QuestionSchema.statics.findQuestionById = function (id, callback) {
+  // Find the Question with the given id, return it or an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()))
+    return callback('bad_request');
+
+  const Question = this;
+
+  Question.findById(mongoose.Types.ObjectId(id.toString()), (err, question) => {
+    if (err) return callback('database_error');
+    if (!question) return callback('document_not_found');
+
+    return callback(null, question);
+  });
+};
+
 module.exports = mongoose.model('Question', QuestionSchema);

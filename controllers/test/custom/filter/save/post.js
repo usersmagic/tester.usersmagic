@@ -1,9 +1,10 @@
-// Post /test/save route
+// Save the given filter under session user
+// XMLHTTP Request
 
-const Submition = require('../../../../models/submition/Submition');
+const User = require('../../../../../models/user/User');
 
 module.exports = (req, res) => {
-  Submition.updateAnswersOfURLSubmition(req.query.id, req.session.user._id, req.body, err => {
+  User.saveFilter(req.session.user._id, req.body, err => {
     if (err) {
       res.write(JSON.stringify({ error: err, success: false }));
       return res.end();

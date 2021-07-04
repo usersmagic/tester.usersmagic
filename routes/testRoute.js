@@ -8,13 +8,18 @@ const isLoggedIn = require('../middleware/isLoggedIn');
 
 const campaignIndexGetController = require('../controllers/test/campaign/index/get');
 const campaignSubmitGetController = require('../controllers/test/campaign/submit/get');
+const customDataGetController = require('../controllers/test/custom/data/get');
+const customFilterIndexGetController = require('../controllers/test/custom/filter/index/get');
+const customFilterValidateGetController = require('../controllers/test/custom/filter/validate/get');
 const customIndexGetController = require('../controllers/test/custom/index/get');
 const customSubmitGetController = require('../controllers/test/custom/submit/get');
+const customSubmitionGetController = require('../controllers/test/custom/submition/get');
 const filterIndexGetController = require('../controllers/test/filter/index/get');
 const filterSubmitGetController = require('../controllers/test/filter/submit/get');
 
 const campaignSavePostController = require('../controllers/test/campaign/save/post');
 const customSavePostController = require('../controllers/test/custom/save/post');
+const customFilterSavePostController = require('../controllers/test/custom/filter/save/post');
 const filterSavePostController = require('../controllers/test/filter/save/post');
 
 router.get(
@@ -43,8 +48,28 @@ router.get(
     campaignSubmitGetController
 );
 router.get(
+  '/custom/data',
+    isLoggedIn,
+    customDataGetController
+);
+router.get(
+  '/custom/filter',
+    isLoggedIn,
+    customFilterIndexGetController
+);
+router.get(
+  '/custom/filter/validate',
+    isLoggedIn,
+    customFilterValidateGetController
+);
+router.get(
   '/custom/submit',
     customSubmitGetController
+);
+router.get(
+  '/custom/submition',
+    isLoggedIn,
+    customSubmitionGetController
 );
 router.get(
   '/filter/submit',
@@ -64,6 +89,11 @@ router.post(
 router.post(
   '/custom/save',
     customSavePostController
+);
+router.post(
+  '/custom/filter/save',
+    isLoggedIn,
+    customFilterSavePostController
 );
 router.post(
   '/filter/save',

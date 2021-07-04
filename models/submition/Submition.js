@@ -116,28 +116,49 @@ SubmitionSchema.statics.createSubmition = function (data, callback) {
 };
 
 SubmitionSchema.statics.createURLSubmition = function (data, callback) {
-    // Creates a submition with the given data and returns it or an error if it exists
+  // Creates a {type: url} submition with the given data and returns it or an error if it exists
+  // Use user_id to add a user
 
-    if (!data || !data.campaign_id || !validator.isMongoId(data.campaign_id.toString()) || !data.question_number || !Number.isInteger(data.question_number))
-    return callback('bad_request');
+  if (!data || !data.campaign_id || !validator.isMongoId(data.campaign_id.toString()) || !data.user_id || !validator.isMongoId(data.user_id.toString()) || !data.target_id || !validator.isMongoId(data.target_id.toString()) || !data.question_number || !Number.isInteger(data.question_number))
+   return callback('bad_request');
 
   const Submition = this;
-  const timeout = 7200000;
 
   const newSubmitionData = {
     type: 'url',
     campaign_id: mongoose.Types.ObjectId(data.campaign_id.toString()),
-    user_id: Math.random().toString(36).substr(2, 12), // randomly generate an id so that the user_id value validation do not fail. This will not and should not be used in any sense!
-    target_id: null,
+    user_id: data.user_id.toString(),
+    target_id: data.target_id.toString(),
     is_private_campaign: true,
     will_terminate_at: null,
-    answers: Array.from({length: data.question_number}, () => '')
+    answers: Array.from({length: data.question_number}, () => ''),
+    last_question: 0
   };
 
   const newSubmition = new Submition(newSubmitionData);
 
   newSubmition.save((err, submition) => {
     if (err) return callback(err);
+
+    return callback(null, submition);
+  });
+};
+
+SubmitionSchema.statics.findSubmitionByTargetIdAndUserId = function (data, callback) {
+  // Find a submition with the given target_id and user_id
+  // Return the Submition, or an error if it exist
+  // If Submition not found, return null, not an error
+
+  if (!data.target_id || !data.user_id)
+    return callback('bad_request');
+
+  const Submition = this;
+
+  Submition.findOne({
+    target_id: data.target_id.toString(),
+    user_id: data.user_id.toString()
+  }, (err, submition) => {
+    if (err) return callback('database_error');
 
     return callback(null, submition);
   });
@@ -236,24 +257,24 @@ SubmitionSchema.statics.submitAnswers = function (id, user_id, callback) {
   });
 };
 
-SubmitionSchema.statics.updateAnswersOfURLSubmition = function (id, id2, data, callback) {
-  // Find the submition with the given id, check if the cookie id and given id are equal (for authentication), update its answers and last_question
+SubmitionSchema.statics.updateAnswersOfURLSubmition = function (id, user_id, data, callback) {
+  // Find the submition with the given id, check if the user id matches (for authentication), update its answers and last_question
   // Return an error if it exists
 
-  if (!id || !validator.isMongoId(id.toString()) || !id2 || !validator.isMongoId(id2.toString()) || !data || typeof data != 'object')
+  if (!id || !validator.isMongoId(id.toString()) || !user_id || !validator.isMongoId(user_id.toString()) || !data || typeof data != 'object')
     return callback('bad_request');
 
   if (!data.answers || typeof data.answers != 'object' || isNaN(parseInt(data.last_question)))
     return callback('bad_request');
-
-  if (id.toString() != id2.toString())
-    return callback('document_validation');
 
   const Submition = this;
 
   Submition.findById(mongoose.Types.ObjectId(id.toString()), (err, submition) => {
     if (err || !submition)
       return callback('document_not_found');
+
+    if (submition.user_id.toString() != user_id.toString())
+      return callback('not_authenticated_request')
     
     if (submition.status != 'saved')
       return callback('document_validation');
@@ -275,21 +296,21 @@ SubmitionSchema.statics.updateAnswersOfURLSubmition = function (id, id2, data, c
   });
 };
 
-SubmitionSchema.statics.submitAnswersofURLSubmition = function (id, id2, callback) {
-  // Find the submition with the given id, check if the cookie id and given id are equal (for authentication), update its status as waiting if it is saved
+SubmitionSchema.statics.submitAnswersofURLSubmition = function (id, user_id, callback) {
+  // Find the submition with the given id, check if the user_id matches (for authentication), update its status as waiting if it is saved
   // Return an error if it exists
 
-  if (!id || !validator.isMongoId(id.toString()) || !id2 || !validator.isMongoId(id2.toString()))
+  if (!id || !validator.isMongoId(id.toString()) || !user_id || !validator.isMongoId(user_id.toString()))
     return callback('bad_request');
-
-  if (id.toString() != id2.toString())
-    return callback('document_validation');
 
   const Submition = this;
 
   Submition.findById(mongoose.Types.ObjectId(id.toString()), (err, submition) => {
     if (err || !submition)
       return callback('document_not_found');
+
+    if (submition.user_id.toString() != user_id.toString())
+      return callback('not_authenticated_request');
 
     if (submition.status != 'saved')
       return callback('document_validation');
