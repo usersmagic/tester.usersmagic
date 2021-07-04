@@ -371,35 +371,70 @@ UserSchema.statics.createUser = function (data, callback) {
 
   const User = this;
 
-  const newUserData = {
-    confirm_code: Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10),
-    email: data.email,
-    password: data.password,
-    invitor: data.code && validator.isMongoId(data.code.toString()) ? data.code.toString() : null,
-    agreement_approved: true,
-    on_waitlist: true // Always true for a new user
-  };
+  User.findOne({
+    email: data.email.trim()
+  }, (err, user) => {
+    if (err) return callback('database_error');
 
-  const newUser = new User(newUserData);
+    if (user) {
+      if (!user.is_temporary)
+        return callback('email_duplication');
 
-  newUser.save((err, user) => {
-    if (err && err.code == 11000) 
-      return callback('email_duplication');
-    if (err)
-      return callback('database_error');
+      user.is_temporary = false;
+      user.confirm_code = Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10);
+      user.password = data.password;
+      user.invitor = data.code && validator.isMongoId(data.code.toString()) ? data.code.toString() : null;
+      user.agreement_approved = true;
+      user.on_waitlist = true;
 
-    User.collection
-      .createIndex({
-        email: -1
-      })
-      .then(() => {
-        getUser(user, (err, user) => {
-          if (err) return callback(err);
+      user.save((err, user) => {
+        if (err) return callback('database_error');
+
+        User.collection
+          .createIndex({
+            email: -1
+          })
+          .then(() => {
+            getUser(user, (err, user) => {
+              if (err) return callback(err);
+        
+              return callback(null, user);
+            });
+          })
+          .catch(err => callback('indexing_error'));
+      });
+    } else {
+      const newUserData = {
+        confirm_code: Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10),
+        email: data.email,
+        password: data.password,
+        invitor: data.code && validator.isMongoId(data.code.toString()) ? data.code.toString() : null,
+        agreement_approved: true,
+        on_waitlist: true // Always true for a new user
+      };
     
-          return callback(null, user);
-        });
-      })
-      .catch(err => callback('indexing_error'));
+      const newUser = new User(newUserData);
+    
+      newUser.save((err, user) => {
+        if (err && err.code == 11000) 
+          return callback('email_duplication');
+        if (err)
+          return callback('database_error');
+    
+        User.collection
+          .createIndex({
+            email: -1
+          })
+          .then(() => {
+            getUser(user, (err, user) => {
+              if (err) return callback(err);
+        
+              return callback(null, user);
+            });
+          })
+          .catch(err => callback('indexing_error'));
+      });
+    }
   });
 };
 
