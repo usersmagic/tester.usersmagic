@@ -233,6 +233,11 @@ const UserSchema = new Schema({
     // Shows if the user is currently on waitlist or not, default to false for old users, always set true on a new user
     type: Boolean,
     default: false
+  },
+  discord_id: {
+    // it keeps the discord id of the user, if exists
+    type: Number,
+    default: null
   }
 });
 
@@ -248,7 +253,7 @@ UserSchema.statics.findUser = function (email, password, callback) {
 
   let User = this;
 
-  User.findOne({ email: email.trim() }).then(user => { 
+  User.findOne({ email: email.trim() }).then(user => {
     if (!user)
       return callback('document_not_found');
 
@@ -264,7 +269,7 @@ UserSchema.statics.findUser = function (email, password, callback) {
 
           getUser(user, (err, user) => {
             if (err) return callback(err);
-    
+
             return callback(null, user);
           });
         });
@@ -276,14 +281,14 @@ UserSchema.statics.findUser = function (email, password, callback) {
 
           getUser(user, (err, user) => {
             if (err) return callback(err);
-    
+
             return callback(null, user);
           });
         });
       } else {
         getUser(user, (err, user) => {
           if (err) return callback(err);
-  
+
           return callback(null, user);
         });
       }
@@ -497,12 +502,42 @@ UserSchema.statics.getUserIdByEmail = function (email, callback) {
       return callback('document_not_found');
 
     return callback(null, user._id.toString());
+
+  const newUserData = {
+    confirm_code: Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10),
+    email: data.email,
+    password: data.password,
+    invitor: data.code && validator.isMongoId(data.code.toString()) ? data.code.toString() : null,
+    agreement_approved: true,
+    on_waitlist: true // Always true for a new user
+  };
+
+  const newUser = new User(newUserData);
+
+  newUser.save((err, user) => {
+    if (err && err.code == 11000)
+      return callback('email_duplication');
+    if (err)
+      return callback('database_error');
+
+    User.collection
+      .createIndex({
+        email: -1
+      })
+      .then(() => {
+        getUser(user, (err, user) => {
+          if (err) return callback(err);
+
+          return callback(null, user);
+        });
+      })
+      .catch(err => callback('indexing_error'));
   });
 };
 
 UserSchema.statics.generateResetPasswordCode = function () {
   // Generate a new reset password code with 11 digits and return
-  
+
   const length = 11;
 
   let str = "";
@@ -528,7 +563,7 @@ UserSchema.statics.updateResetPasswordCode = function (data, callback) {
   }}, {new: true}, (err, user) => {
     if (err) return callback('database_error');
     if (!user) return callback('document_not_found');
-  
+
     return callback(null, user);
   });
 };
@@ -582,7 +617,7 @@ UserSchema.statics.closeAccount = function (email, password, callback) {
       on_waitlist: true
     }}, err => {
       if (err) return callback('database_error');
-  
+
       return callback(null);
     });
   });
@@ -600,7 +635,7 @@ UserSchema.statics.getConfirmCodeOfUser = function (id, callback) {
     if (err) return callback('database_error');
     if (!user) return callback('document_not_found');
 
-    if (user.confirm_code && user.confirm_code.length == 20) 
+    if (user.confirm_code && user.confirm_code.length == 20)
       return callback(null, user.confirm_code);
 
     User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
@@ -661,10 +696,10 @@ UserSchema.statics.completeUser = function (id, data, callback) {
 
     User.findById(mongoose.Types.ObjectId(id.toString()), (err, user) => {
       if (err || !user) return callback('document_not_found');
-  
+
       if (user.completed)
         return callback('already_authenticated');
-      
+
       User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
         name: data.name,
         country: country.alpha2_code,
@@ -700,25 +735,25 @@ UserSchema.statics.updateUser = function (id, data, callback) {
       if (data.city && data.town) {
         Country.validateCityAndTown(user.country, data, res => {
           if (!res) return callback('bad_request');
-  
+
           User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
             name: (data.name && typeof data.name == 'string' ? data.name : user.name),
             phone: (data.phone && validator.isMobilePhone(data.phone.toString()) ? data.phone : user.phone),
             city: data.city,
-            town: data.town 
+            town: data.town
           }}, err => {
             if (err) return callback('database_error');
-    
+
             return callback(null);
           });
         })
       } else {
         User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
           name: (data.name && typeof data.name == 'string' ? data.name : user.name),
-          phone: (validateCountryCode(data.phone, country.phone_code) ? data.phone : user.phone)   
+          phone: (validateCountryCode(data.phone, country.phone_code) ? data.phone : user.phone)
         }}, err => {
           if (err) return callback('database_error');
-  
+
           return callback(null);
         });
       }
@@ -776,7 +811,7 @@ UserSchema.statics.findCampaignsForUser = function (user_id, callback) {
 
     if (user.gender == 'erkek')
       user.gender = 'male';
-    
+
     if (user.gender == 'kadın')
       user.gender = 'female';
 
@@ -817,7 +852,7 @@ UserSchema.statics.joinCampaign = function (campaign_id, user_id, callback) {
 
   User.findById(mongoose.Types.ObjectId(user_id.toString()), (err, user) => {
     if (err) return callback('database_error');
-    
+
     Campaign.findOne({$and: [
       { _id: mongoose.Types.ObjectId(campaign_id) },
       { _id: {$nin: user.campaigns} },
@@ -831,7 +866,7 @@ UserSchema.statics.joinCampaign = function (campaign_id, user_id, callback) {
       {paused: false}
     ]}, (err, campaign) => {
       if (err || !campaign) return callback('document_not_found');
-  
+
       Submition.createSubmition({
         campaign_id: campaign._id.toString(),
         user_id: user._id,
@@ -839,12 +874,12 @@ UserSchema.statics.joinCampaign = function (campaign_id, user_id, callback) {
         is_private_campaign: false
       }, (err, submition) => {
         if (err) return callback('database_error');
-  
+
         User.findByIdAndUpdate(mongoose.Types.ObjectId(user._id.toString()), {$push: {
           campaigns: campaign._id.toString()
         }}, {}, err => {
           if (err) return callback('database_error');
-  
+
           return callback(null, submition._id.toString());
         });
       });
@@ -869,7 +904,7 @@ UserSchema.statics.joinTarget = function (target_id, user_id, callback) {
 
       Project.findProjectById(target.project_id, (err, project) => {
         if (err || !project) return callback('document_not_found');
-  
+
         Submition.createSubmition({
           campaign_id: project._id,
           target_id: target._id,
@@ -878,7 +913,7 @@ UserSchema.statics.joinTarget = function (target_id, user_id, callback) {
           is_private_campaign: true
         }, (err, submition) => {
           if (err) return callback('database_error');
-    
+
           return callback(null, submition._id.toString());
         });
       });
@@ -909,7 +944,7 @@ UserSchema.statics.getSubmitionCampaignAndQuestions = function (submition_id, us
           (time, next) => {
             Question.findById(mongoose.Types.ObjectId(campaign.questions[time]), (err, question) => {
               if (err) return next('database_erorr');
-  
+
               return next(null, {
                 question,
                 answer: submition.answers[question._id.toString()] || (question.type == 'checked' ? [] : '')
@@ -1033,7 +1068,7 @@ UserSchema.statics.getInReviewSubmitionsOfUser = function (user_id, callback) {
                         will_terminate_at: submition.will_terminate_at
                       });
                     }
-                  }); 
+                  });
                 }
               });
             } else {
@@ -1069,7 +1104,7 @@ UserSchema.statics.getInReviewSubmitionsOfUser = function (user_id, callback) {
           if (err) return callback(err);
 
           submitions = submitions.filter(submition => submition && submition._id); // Filter any empty submitions that occured because of errors
-    
+
           return callback(null, submitions);
         }
       );
@@ -1148,7 +1183,7 @@ UserSchema.statics.getCompletedSubmitionsOfUser = function (user_id, callback) {
           if (err) return callback(err);
 
           submitions = submitions.filter(submition => submition && submition._id); // Filter any empty submitions that occured because of errors
-    
+
           return callback(null, submitions);
         }
       );
@@ -1390,5 +1425,18 @@ UserSchema.statics.findOrCreateCustomSubmition = function (id, target_id, callba
     });
   });
 };
+
+UserSchema.statics.setDiscordID = function(user_id, discord_id, callback) {
+  const User = this;
+
+  User.findByIdAndUpdate(mongoose.Types.ObjectId(user_id.toString()), { $set: {
+    discord_id: discord_id
+  }},{new: true}, (err, user) => {
+    if (err) return callback('database_error');
+    if (!user) return callback('document_not_found');
+
+    return callback(null, user);
+  });
+}
 
 module.exports = mongoose.model('User', UserSchema);
