@@ -416,6 +416,9 @@ function updateFilterAnswer(callback) {
 
     const filter = filters[filterIndex];
     const user = res.user;
+    
+    if (!user.information)
+      user.information = {};
 
     if (filter.type == 'special') {
       let filterName = filter._id;
@@ -435,7 +438,7 @@ function updateFilterAnswer(callback) {
         filterAnswer = filter.type == 'checked' ? [] : '';
       return callback(false);
     }
-  })
+  });
 }
 
 function validateFiltersAndCreateSubmition() {
