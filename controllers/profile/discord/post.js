@@ -1,9 +1,10 @@
 // This gets the authentication code from the tester and
 // forwards directly to the server with a secure way (encryption)
+
 const net = require('net');
 const crypto = require('crypto');
 
-const User = require('../../models/user/User');
+const User = require('../../../models/user/User');
 
 const BOT_URL = process.env.DISCORD_BOT_URL;
 const BOT_PORT = process.env.DISCORD_BOT_PORT;
@@ -11,27 +12,28 @@ const KEY = process.env.SYMMETRIC_ENC_KEY;
 
 const AESblocksize = 16;
 
-const key = KEY;
-
 module.exports = (req,res) => {
   const client = new net.Socket();
-  client.connect(BOT_PORT, BOT_URL, ()=>{
+
+  client.connect(BOT_PORT, BOT_URL, () => {
     const discordCode = "code="+req.body.code;
     const ciphertext = encrypt(discordCode);
 
     client.write(ciphertext);
-  })
+  });
 
   client.on('data', data =>{
       const discord_id = decrypt(data);
+
       User.setDiscordID(req.session.user._id, discord_id, (err, user) =>{
-        if (err) res.write(JSON.stringify({success: "false"}));
-        else res.write(JSON.stringify({success: "true"}));
+        if (err)
+          res.write(JSON.stringify({ success: "false" }));
+        else
+          res.write(JSON.stringify({ success: "true" }));
 
         return res.end();
       });
-  })
-
+  });
 }
 
 function encrypt(plain_text) {
