@@ -25,6 +25,9 @@ block content
   span.cancel-text.display-none= __('Cancel')
   span.your-answer.display-none= __('Your answer')
   span.required.display-none= __('Required')
+  span.not-required.display-none= __('Not required')
+  span.no.display-none= __('NO')
+  span.yes.display-none= __('YES')
   span.clear-answers.display-none= __('Clear answer')
   span.are-you-sure-title.display-none= __('Are you sure you want to continue?')
   span.no-update-after-submit-text.display-none= __('You cannot edit or delete your answers once you submit your test. You must rejoin the campaign if your answers are rejected, so please double-check what you wrote. Thank you :)')
@@ -32,15 +35,15 @@ block content
   .all-wrapper
     .start-page-wrapper
       form.email-page-one-wrapper
-        span.email-title Write your email to start
-        input.general-input-with-border#email-input(type="email" placeholder="E-mail" autofocus autocomplete="none")
+        span.email-title= __('Write your email to start')
+        input.general-input-with-border#email-input(type="email" placeholder=__('Email') autofocus autocomplete="none")
         button.general-seablue-button
-          span Continue
+          span= __('Continue')
         span.email-error.page-one-email-error
       form.email-page-two-wrapper(style="display: none")
-        span.email-title Please rewrite your email
-        span.email-info We need you to confirm your email, just to make sure :)
-        input.general-input-with-border#confirm-email-input(type="email" placeholder="Confirm E-mail" autocomplete="none")
+        span.email-title= __('Please rewrite your email')
+        span.email-info= __('We need you to confirm your email, just to make sure :)')
+        input.general-input-with-border#confirm-email-input(type="email" placeholder=__('Confirm Email') autocomplete="none")
         .agreement-wrapper
           input.display-none#approve-agrement-input(type="checkbox")
           .agreement-checkbox-wrapper
@@ -52,16 +55,16 @@ block content
             a.agreement-link(href="/agreement/privacy")  #{__('Privacy Statement')}
             span.agreement-text  #{__('for using Usersmagic and give your permission for protection and usage of your informations.')}
         button.general-seablue-button
-          span Confirm
+          span= __('Confirm')
         span.email-error.page-two-email-error
       form.validate-password-wrapper(style="display: none") 
-        span.email-title Please write your password
-        span.email-info We found an account with this email. Please write your password to access it.
+        span.email-title= __('Please write your password')
+        span.email-info= __('We found an account with this email. Please write your password to access it.')
         .lost-password-wrapper
           a.lost-password-link(href="/auth/lost_password" + (language_key ? ("?lang=" + language_key) : "")) #{__('Reset Password')} 
-        input.general-input-with-border#password-input(type="password" placeholder="Your password")
+        input.general-input-with-border#password-input(type="password" placeholder=__('Your password'))
         button.general-seablue-button
-          span Continue
+          span= __('Continue')
         span.email-error.password-error
     .question-outer-wrapper(style="display: none")
       .back-button

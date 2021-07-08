@@ -235,7 +235,13 @@
 	"Please confirm your email": "Lütfen e-postanızı onaylayın",
 	"Your confirmation does not match. Please retry": "E-posta onayınız eşleşmiyor, lütfen tekrar deneyin",
 	"Your password is wrong, please try again": "Şifreniz yanlış, lütfen tekrar deneyin",
-	"Discord Server": "Discord Server",
-	"Join Usersmagic Discord Server": "Join Usersmagic Discord Server",
-	"Usersmagic Discord Server": "Usersmagic Discord Server"
+	"Discord Server": "Discord Sunucusu",
+	"Join Usersmagic Discord Server": "Usersmagic Discord Sunucusuna Katılın",
+	"Usersmagic Discord Server": "Usersmagic Discord Sunucusu",
+	"Write your email to start": "Başlamak için e-posta adresinizi yazın",
+	"Please rewrite your email": "Lütfen e-postanızı tekrar edin",
+	"We need you to confirm your email, just to make sure :)": "Emin olmak için e-postanızı onaylamamız gerekiyor. Teşekkür ederiz",
+	"We found an account with this email. Please write your password to access it.": "Bu e-posta ile bir hesap bulundu. Hesaba erişmek için lütfen şifrenizi yazın.",
+	"Your password": "Şifreniz",
+	"Confirm Email": "E-Postanızı onaylayın"
 }

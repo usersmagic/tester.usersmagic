@@ -8,7 +8,7 @@ let question_types = {
 let saveError = false;
 let yourAnswer, other;
 let unknownErrorTitle, tryAgainLaterText, okayText, confirmText, cancelText, required, clearAnswers, areYouSureTitle, noUpdateAfterSubmitText;
-
+let notRequired, no, yes;
 
 function throwUnknownError() {
   createConfirm({
@@ -208,6 +208,9 @@ function createQuestion(question, answer, index) {
   
       questionWrapper.appendChild(opinionOuterWrapper);
     } else if (question.type == 'multiple_choice') {
+      const eachQuestionChoicesWrapper = document.createElement('div');
+      eachQuestionChoicesWrapper.classList.add('each-question-choices-wrapper');
+
       question.choices.forEach(choice => {
         const eachQuestionChoice = document.createElement('div');
         eachQuestionChoice.classList.add('each-question-choice');
@@ -237,8 +240,10 @@ function createQuestion(question, answer, index) {
         const span = document.createElement('span');
         span.innerHTML = choice;
         eachQuestionChoice.appendChild(span);
-        questionWrapper.appendChild(eachQuestionChoice);
+        eachQuestionChoicesWrapper.appendChild(eachQuestionChoice);
       });
+
+      questionWrapper.appendChild(eachQuestionChoicesWrapper);
     }
   
     const clearQuestionButton = document.createElement('span');
@@ -657,6 +662,9 @@ window.onload = () => {
   confirmText = document.querySelector('.confirm-text').innerHTML;
   cancelText = document.querySelector('.cancel-text').innerHTML;
   required = document.querySelector('.required').innerHTML;
+  notRequired = document.querySelector('.not-required').innerHTML;
+  no = document.querySelector('.no').innerHTML;
+  yes = document.querySelector('.yes').innerHTML;
   clearAnswers = document.querySelector('.clear-answers').innerHTML;
   areYouSureTitle = document.querySelector('.are-you-sure-title').innerHTML;
   noUpdateAfterSubmitText = document.querySelector('.no-update-after-submit-text').innerHTML;
