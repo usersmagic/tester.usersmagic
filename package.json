@@ -13,6 +13,7 @@
   "author": "Yunus Gürlek",
   "license": "MIT",
   "dependencies": {
+    "aes256": "^1.1.0",
     "async": "^3.2.0",
     "aws-sdk": "^2.709.0",
     "bcrypt": "^5.0.1",
@@ -22,6 +23,7 @@
     "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",
     "cron": "^1.8.2",
+    "crypto": "^1.0.1",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "express-csv": "^0.6.0",
@@ -34,6 +36,7 @@
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.5.4",
     "multer": "^1.4.2",
+    "net": "^1.0.2",
     "node-fetch": "^2.6.1",
     "nodemailer": "^6.4.12",
     "nodemailer-html-to-text": "^3.1.0",
