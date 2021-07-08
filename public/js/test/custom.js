@@ -351,6 +351,9 @@ function createQuestion(question, answer, index) {
     
         questionWrapper.appendChild(opinionOuterWrapper);
       } else if (question.type == 'radio' || question.type == 'checked') {
+        const eachQuestionChoicesWrapper = document.createElement('div');
+        eachQuestionChoicesWrapper.classList.add('each-question-choices-wrapper');
+
         question.choices.forEach(choice => {
           const eachQuestionChoice = document.createElement('div');
           eachQuestionChoice.classList.add('each-question-choice');
@@ -380,21 +383,24 @@ function createQuestion(question, answer, index) {
           const span = document.createElement('span');
           span.innerHTML = choice;
           eachQuestionChoice.appendChild(span);
-          questionWrapper.appendChild(eachQuestionChoice);
+          eachQuestionChoicesWrapper.appendChild(eachQuestionChoice);
         });
+
         if (question.other_option) {
           if (question.type == 'radio') {
             if (question.choices.includes(answer))
-              createOtherOptionInput(questionWrapper, question.type, '');
+              createOtherOptionInput(eachQuestionChoicesWrapper, question.type, '');
             else
-              createOtherOptionInput(questionWrapper, question.type, answer);
+              createOtherOptionInput(eachQuestionChoicesWrapper, question.type, answer);
           } else {
             if (answer.find(ans => !question.choices.includes(ans)))
-              createOtherOptionInput(questionWrapper, question.type, answer.find(ans => !question.choices.includes(ans)));
+              createOtherOptionInput(eachQuestionChoicesWrapper, question.type, answer.find(ans => !question.choices.includes(ans)));
             else
-              createOtherOptionInput(questionWrapper, question.type, '');
+              createOtherOptionInput(eachQuestionChoicesWrapper, question.type, '');
           }
         }
+
+        questionWrapper.appendChild(eachQuestionChoicesWrapper);
       }
     
       const clearQuestionButton = document.createElement('span');
