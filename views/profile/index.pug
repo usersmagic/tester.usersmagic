@@ -28,23 +28,15 @@ block content
         i.far.fa-credit-card
       a.navigation-bar-button.selected-navigation-bar-button(href="/profile")
         i.fas.fa-cog
-      a.navigation-bar-button(href="https://discord.com/oauth2/authorize?response_type=code&client_id=839767550217027594&scope=identify%20guilds.join&state=15773059ghq9183habn&redirect_uri=http://localhost:3000/discord&prompt=consent")
-        i.fas discord
     .all-content-wrapper
       .all-content-inner-wrapper
+        //- span.general-input-title= __('Usersmagic Discord Server')
+        //- a.general-seablue-button(style="margin-top: 0px" target="_blank" href="https://discord.com/oauth2/authorize?response_type=code&client_id=839767550217027594&scope=identify%20guilds.join&state=15773059ghq9183habn&redirect_uri=https://tester.usersmagic.com/profile&prompt=consent")
+        //-   span= __('Join')
         span.general-input-title= __('Email')
         span.general-input-with-border-no-change= user.email
         span.general-input-title= __('Full Name')
         input.general-input-with-border#name-input(type="text" placeholder="Full Name" value=user.name)
-        //- span.general-input-title Country of Residence
-        //- .general-drop-down-list-outer-wrapper(style="z-index: 5;")
-        //-   .general-drop-down-list-wrapper(style="z-index: 5;")
-        //-     input.general-drop-down-list-input#country-visible-input(type="text" autocomplete="none" placeholder=__('Country') value=__(country.name))
-        //-     input.general-drop-down-list-input-not-visible#country-input(type="text" value=user.country)
-        //-     input.general-drop-down-list-items-json(type="text" value=JSON.stringify(countries.map(country => { return {name: __(country.name), id: country.alpha2_code} })))
-        //-     .general-drop-down-choices-wrapper
-        //-       each country in countries
-        //-         span.general-drop-down-list-each-item(id=country.alpha2_code)= __(country.name)
         span.general-input-title= __('Phone Number')
         label.phone-code-input-wrapper
           span.phone-code#phone-code +#{country.phone_code}

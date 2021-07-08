@@ -52,7 +52,6 @@ if (cluster.isMaster) {
   const agreementRouteController = require('./routes/agreementRoute');
   const waitingRouteController = require('./routes/waitingRoute');
   const walletRouteController = require('./routes/walletRoute');
-  const discordRouteController = require('./routes/discordRoute');
 
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'pug');
@@ -99,7 +98,6 @@ if (cluster.isMaster) {
   app.use('/agreement', agreementRouteController);
   app.use('/waiting', waitingRouteController);
   app.use('/wallet', walletRouteController);
-  app.use('/discord', discordRouteController);
 
   server.listen(PORT, () => {
     console.log(`Server is on port ${PORT} as Worker ${cluster.worker.id} running @ process ${cluster.worker.process.pid}`);

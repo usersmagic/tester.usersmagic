@@ -234,5 +234,8 @@
 	"An unknown error occured, please refresh the page and try again": "Bilinmeyen bir hata oluştu, lütfen sayfayı yenileyin ve tekrar deneyin",
 	"Please confirm your email": "Lütfen e-postanızı onaylayın",
 	"Your confirmation does not match. Please retry": "E-posta onayınız eşleşmiyor, lütfen tekrar deneyin",
-	"Your password is wrong, please try again": "Şifreniz yanlış, lütfen tekrar deneyin"
+	"Your password is wrong, please try again": "Şifreniz yanlış, lütfen tekrar deneyin",
+	"Discord Server": "Discord Server",
+	"Join Usersmagic Discord Server": "Join Usersmagic Discord Server",
+	"Usersmagic Discord Server": "Usersmagic Discord Server"
 }

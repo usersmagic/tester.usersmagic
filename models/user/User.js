@@ -502,36 +502,6 @@ UserSchema.statics.getUserIdByEmail = function (email, callback) {
       return callback('document_not_found');
 
     return callback(null, user._id.toString());
-
-  const newUserData = {
-    confirm_code: Math.random().toString(36).substr(2, 10) + Math.random().toString(36).substr(2, 10),
-    email: data.email,
-    password: data.password,
-    invitor: data.code && validator.isMongoId(data.code.toString()) ? data.code.toString() : null,
-    agreement_approved: true,
-    on_waitlist: true // Always true for a new user
-  };
-
-  const newUser = new User(newUserData);
-
-  newUser.save((err, user) => {
-    if (err && err.code == 11000)
-      return callback('email_duplication');
-    if (err)
-      return callback('database_error');
-
-    User.collection
-      .createIndex({
-        email: -1
-      })
-      .then(() => {
-        getUser(user, (err, user) => {
-          if (err) return callback(err);
-
-          return callback(null, user);
-        });
-      })
-      .catch(err => callback('indexing_error'));
   });
 };
 
@@ -1426,17 +1396,23 @@ UserSchema.statics.findOrCreateCustomSubmition = function (id, target_id, callba
   });
 };
 
-UserSchema.statics.setDiscordID = function(user_id, discord_id, callback) {
+UserSchema.statics.setDiscordID = function (id, discord_id, callback) {
+  // Set discord_id of the User with the given id
+  // Return user, or an error if it exists
+
+  if (!id || !validator.isMongoId(id.toString()) || !discord_id)
+    return callback('bad_request');
+
   const User = this;
 
-  User.findByIdAndUpdate(mongoose.Types.ObjectId(user_id.toString()), { $set: {
+  User.findByIdAndUpdate(mongoose.Types.ObjectId(id.toString()), {$set: {
     discord_id: discord_id
-  }},{new: true}, (err, user) => {
+  }}, {new: true}, (err, user) => {
     if (err) return callback('database_error');
     if (!user) return callback('document_not_found');
 
     return callback(null, user);
   });
-}
+};
 
 module.exports = mongoose.model('User', UserSchema);

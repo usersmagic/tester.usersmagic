@@ -22,6 +22,7 @@ module.exports = (user, callback) => {
     overall_credit: user.overall_credit,
     country: user.country,
     on_waitlist: user.on_waitlist,
+    information: user.information || {},
     discord_id: user.discord_id
   });
 }
