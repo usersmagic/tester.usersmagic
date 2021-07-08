@@ -234,5 +234,14 @@
 	"An unknown error occured, please refresh the page and try again": "An unknown error occured, please refresh the page and try again",
 	"Please confirm your email": "Please confirm your email",
 	"Your confirmation does not match. Please retry": "Your confirmation does not match. Please retry",
-	"Your password is wrong, please try again": "Your password is wrong, please try again"
+	"Your password is wrong, please try again": "Your password is wrong, please try again",
+	"Discord Server": "Discord Server",
+	"Join Usersmagic Discord Server": "Join Usersmagic Discord Server",
+	"Usersmagic Discord Server": "Usersmagic Discord Server",
+	"Write your email to start": "Write your email to start",
+	"Please rewrite your email": "Please rewrite your email",
+	"We need you to confirm your email, just to make sure :)": "We need you to confirm your email, just to make sure :)",
+	"We found an account with this email. Please write your password to access it.": "We found an account with this email. Please write your password to access it.",
+	"Your password": "Your password",
+	"Confirm Email": "Confirm Email"
 }
